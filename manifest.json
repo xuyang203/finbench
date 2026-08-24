@@ -1,0 +1,16 @@
+{
+  "name": "金融工作台",
+  "short_name": "金融台",
+  "description": "多市场金融仪表盘工作台（恐贪指数 / VIX / 大盘指数 / 资金流向 / 估值宽度 / 板块热度）",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0e17",
+  "theme_color": "#0a0e17",
+  "lang": "zh-CN",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

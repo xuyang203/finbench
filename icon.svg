@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#0a0e17"/>
+  <rect x="6" y="6" width="500" height="500" rx="108" fill="none" stroke="#232a3a" stroke-width="4"/>
+  <!-- gauge arc zones -->
+  <g transform="translate(256,300)" stroke-linecap="round" fill="none" stroke-width="44">
+    <path d="M -150 0 A 150 150 0 0 1 -106 -106" stroke="#ef4444"/>
+    <path d="M -106 -106 A 150 150 0 0 1 -46 -143" stroke="#f59e0b"/>
+    <path d="M -46 -143 A 150 150 0 0 1 46 -143" stroke="#eab308"/>
+    <path d="M 46 -143 A 150 150 0 0 1 106 -106" stroke="#84cc16"/>
+    <path d="M 106 -106 A 150 150 0 0 1 150 0" stroke="#22c55e"/>
+  </g>
+  <!-- needle to ~72 (greed) -->
+  <g transform="translate(256,300)">
+    <line x1="0" y1="0" x2="86" y2="-122" stroke="#e1e6f0" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="0" cy="0" r="20" fill="#e1e6f0"/>
+    <circle cx="0" cy="0" r="9" fill="#0a0e17"/>
+  </g>
+  <!-- mini bars -->
+  <g transform="translate(96,392)">
+    <rect x="0" y="0" width="34" height="54" rx="6" fill="#f23645" opacity=".9"/>
+    <rect x="50" y="-18" width="34" height="72" rx="6" fill="#00b67a" opacity=".9"/>
+    <rect x="100" y="-8" width="34" height="62" rx="6" fill="#f23645" opacity=".9"/>
+    <rect x="150" y="-28" width="34" height="82" rx="6" fill="#f23645" opacity=".9"/>
+    <rect x="200" y="-14" width="34" height="68" rx="6" fill="#00b67a" opacity=".9"/>
+  </g>
+</svg>
