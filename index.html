@@ -38,15 +38,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .home-bar{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:rgba(255,255,255,.55);z-index:60}
 @media(max-width:520px){.home-bar{bottom:max(7px,calc(var(--safe-b) + 2px))}}
 
-/* status bar */
-.statusbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px 6px;font-size:14px;font-weight:600;height:48px;flex-shrink:0;position:relative;z-index:50}
-.statusbar .time{font-variant-numeric:tabular-nums;letter-spacing:.3px}
-.statusbar .right{display:flex;align-items:center;gap:6px}
-.statusbar svg{display:block}
-@media(max-width:520px){.statusbar{padding-top:max(14px,calc(var(--safe-t) + 6px))}}
-
 /* app shell */
-.app{flex:1;display:flex;flex-direction:column;min-height:0;position:relative}
+.app{flex:1;display:flex;flex-direction:column;min-height:0;position:relative;padding-top:46px}
+@media(max-width:520px){.app{padding-top:var(--safe-t)}}
 .view{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px 96px}
 .view[hidden]{display:none}
 
@@ -82,13 +76,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .fg .comp{font-size:10px;color:var(--dim);background:var(--surface-2);padding:3px 7px;border-radius:8px}
 .fg .comp b{color:var(--text)}
 
-/* vix level */
-.vix{display:flex;align-items:baseline;gap:8px}
-.vix .v{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
-.vix .u{font-size:12px;color:var(--dim)}
-.level{position:relative;height:8px;border-radius:5px;margin-top:12px;background:linear-gradient(90deg,#22c55e,#eab308,#f59e0b,#ef4444)}
-.level .mk{position:absolute;top:-3px;width:4px;height:14px;border-radius:2px;background:#fff;box-shadow:0 0 0 2px rgba(0,0,0,.4)}
-.level .scales{display:flex;justify-content:space-between;font-size:9px;color:var(--faint);margin-top:5px}
 
 /* indices row */
 .idx-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;margin:0 -2px}
@@ -161,7 +148,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 /* gradient track + pin (PE-percentile style) */
 .m-track{position:relative;height:8px;border-radius:5px}
 .m-track.sent{background:linear-gradient(90deg,var(--fear),var(--neutral),var(--greed))}
-.m-track.vix{background:linear-gradient(90deg,var(--greed),var(--neutral),var(--fear))}
 .m-pin{position:absolute;top:-3px;width:4px;height:14px;border-radius:2px;background:#fff;box-shadow:0 0 0 2px rgba(0,0,0,.35)}
 .m-scales{display:flex;justify-content:space-between;font-size:9px;color:var(--faint);margin-top:4px}
 /* futures long/short positioning */
@@ -180,6 +166,24 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .fut-legend .lg{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle}
 .lg.g{background:var(--down)}
 .lg.r{background:var(--up)}
+
+/* 三数字并排（涨停/跌停/强势股） */
+.stat3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.st3{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:11px 8px;text-align:center}
+.st3 .k{font-size:10px;color:var(--dim)}
+.st3 .v{font-size:22px;font-weight:800;margin-top:4px;font-variant-numeric:tabular-nums;line-height:1.1}
+.st3 .u{font-size:9px;color:var(--faint);margin-top:2px}
+
+/* 通用表格行（期指行情 / 行业估值 / 细分板块） */
+.tbl{display:flex;flex-direction:column}
+.tbl .th{display:flex;font-size:10px;color:var(--faint);padding:0 0 6px;border-bottom:1px solid var(--border)}
+.tbl .tr{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.tbl .tr:last-child{border-bottom:none}
+.tbl .c-nm{flex:1;min-width:0;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tbl .c-lead{display:block;font-size:9px;color:var(--faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tbl .c-num{width:58px;text-align:right;font-size:12px;font-variant-numeric:tabular-nums;flex-shrink:0}
+.tbl .c-num.b{font-weight:800}
+.tbl .c-tag{width:52px;text-align:right;font-size:10px;color:var(--faint);flex-shrink:0}
 
 /* tabbar */
 .tabbar{position:absolute;left:0;right:0;bottom:0;height:74px;background:rgba(13,17,24,.92);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;align-items:flex-start;padding:8px 0 calc(var(--safe-b) + 8px);z-index:40}
@@ -210,16 +214,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   <div class="device">
     <div class="island"></div>
 
-    <!-- status bar -->
-    <div class="statusbar">
-      <span class="time" id="clock">9:41</span>
-      <span class="right">
-        <svg width="17" height="11" viewBox="0 0 17 11"><rect x="0" y="7" width="3" height="4" rx="1" fill="#e1e6f0"/><rect x="4.5" y="5" width="3" height="6" rx="1" fill="#e1e6f0"/><rect x="9" y="2.5" width="3" height="8.5" rx="1" fill="#e1e6f0"/><rect x="13.5" y="0" width="3" height="11" rx="1" fill="#e1e6f0"/></svg>
-        <svg width="16" height="11" viewBox="0 0 16 11"><path d="M8 2.5c2.2 0 4.2.8 5.8 2.2l1.1-1.3A9.6 9.6 0 0 0 8 1 9.6 9.6 0 0 0 1.1 3.4l1.1 1.3A8.8 8.8 0 0 1 8 2.5Z" fill="#e1e6f0"/><path d="M8 6c1.1 0 2.1.4 2.9 1.1l1.1-1.3A6.4 6.4 0 0 0 8 4a6.4 6.4 0 0 0-4 1.8l1.1 1.3A4.6 4.6 0 0 1 8 6Z" fill="#e1e6f0"/><circle cx="8" cy="9.5" r="1.5" fill="#e1e6f0"/></svg>
-        <svg width="26" height="12" viewBox="0 0 26 12"><rect x="1" y="1" width="22" height="10" rx="3" fill="none" stroke="#e1e6f0" stroke-opacity=".5"/><rect x="24" y="4" width="2" height="4" rx="1" fill="#e1e6f0" fill-opacity=".5"/><rect x="3" y="3" width="17" height="6" rx="1.5" fill="#e1e6f0"/></svg>
-      </span>
-    </div>
-
     <div class="app">
       <!-- DASHBOARD -->
       <section class="view" id="view-dash">
@@ -236,7 +230,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
           </div>
         </div>
         <div id="cards"></div>
-        <div class="note">实时（浏览器直连公开行情接口，每分钟自动刷新）：指数 · 行业板块 · 涨跌家数 · 融资融券<br>静态快照：恐贪指数/VIX（CNN·CBOE 8/21收盘）· 北向净流入（已停止实时披露）· PE分位（源达 8/21）· 期货持仓（待接入）</div>
+        <div class="note">盘中实时（浏览器直连公开行情接口）：指数 · 申万行业 · 涨跌家数 · 换手率 · 股指期货 · 涨跌停家数 · 细分板块 · A股情绪指数（5维实时合成） —— 交易时段每 60 秒自动刷新，其余时间 30 分钟一轮，切到后台暂停<br>日频（6 小时拉一次）：融资融券 · 行业估值 PE/PB<br>静态参考：北向净流入（已停止实时披露）· PE分位（源达 8/21）· 期指前20席位（中金所无CORS，取不到）</div>
       </section>
 
       <!-- SETTINGS -->
@@ -269,23 +263,14 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 </div>
 
 <script>
-/* ---------- data model (real data, 2026-08-24) ----------
- * 来源：westock行情接口 / neodata / CNN Fear&Greed / 方正·源达证券研报 / 证券时报
- * A股·港股：2026-08-24 盘中   美股·VIX·恐贪：2026-08-21 收盘
- * 期货前20席位 & 部分板块PE分位暂缺，标注为 null
+/* ---------- data model (real-time, 纯前端合成) ----------
+ * 指数/涨跌家数/换手率/期指/涨跌停/板块/两融/行业估值：均来自页面已接好的可直连 A 股源
+ * A股情绪指数(0-100)：由 computeSentiment() 用以上源实时合成（韭圈儿思路，零后端）
+ * 期货前20席位暂缺标注为 null
  */
 const DATA_DATE='2026-08-24 12:30 盘中';
 const D = {
-  fearGreed:{ value:55, prev:52,           // CNN Fear & Greed, 2026-08-21
-    momentum:{score:39, dev:2.1},           // 标普500 vs 125日线(+2.1%)
-    strength:{score:29, highs:0.65},       // NYSE 净新高占比(%)
-    breadth:{score:58, mvs:1043},           // McClellan成交量总和指数
-    pcr:{score:43, ratio:0.75},            // 5日均Put/Call比率
-    vol:{score:50, vix:15.13, avg:14.9},   // VIX vs 50日均值
-    safeHaven:{score:71, gap:4.08},        // 股票vs国债20日回报差(%)
-    junk:{score:96, spread:1.21}           // 垃圾债vs投资级利差(%)
-  },
-  vix:{ value:15.13, prev:16.01, range:[10,40], wk52:[13.38,35.30] },
+  sentiment:null,   // A股情绪指数(0-100)：由 computeSentiment() 实时合成，见下方
   indices:[
     {name:'上证指数',mkt:'A股',val:3870.53,chg:-0.89},
     {name:'深证成指',mkt:'A股',val:13707.61,chg:-2.74},
@@ -297,12 +282,17 @@ const D = {
   ],
   northbound:{ net:-64.12, sh:-54.32, sz:-9.81 },  // 2026-08-21 收盘
   margin:{ rz:26333.15, rzChg:-62.07, rq:270.54, rqChg:2.20 }, // 2026-08-21
-  futures:[  // 前20席位持仓暂缺真实数据，保留结构占位
+  futures:[  // 前20席位持仓：中金所 XML 无 CORS 且为 XML 格式，纯前端取不到，保留结构占位
     {code:'IF',name:'沪深300',long:null,short:null},
     {code:'IH',name:'上证50',long:null,short:null},
     {code:'IC',name:'中证500',long:null,short:null},
     {code:'IM',name:'中证1000',long:null,short:null}
   ],
+  futuresQuote:null,        // 股指期货主力合约实时行情 → {list:[{code,name,contract,price,chg,vol}]}
+  limitPool:{zt:null,dt:null,zb:null,date:null},  // 涨停/跌停/强势股 家数（盘中实时）
+  turnover:null,            // 市场换手率 → {sh,sz,cyb}
+  indVal:{date:null,list:[]}, // 东财细分行业当日估值 → {date,list:[{name,pe,pb,n}]}
+  boards:{list:[],tag:null},  // 东财细分板块涨跌幅 TOP → {list:[{name,chg,turn,pe,lead,leadChg}]}
   breadth:{ up:1130, down:4307, flat:112 },  // 2026-08-24 盘中
   valuation:[  // 近5年PE分位，源达证券(2026-08-21)
     {name:'沪深300',pe:14.16,pct:84},
@@ -329,12 +319,60 @@ const D = {
 
 /* ---------- LIVE data layer: browser fetches public APIs directly ----------
  * 数据源（全部支持 CORS，无需后端）：
- *  - 东方财富 push2:      指数行情 / 全A涨跌家数
- *  - 东方财富 datacenter: 融资融券余额
+ *  - 东方财富 push2:      指数行情 / 全A涨跌家数 / 换手率 / 股指期货 / 细分板块
+ *  - 东方财富 push2ex:    涨停 / 跌停 / 炸板 家数
+ *  - 东方财富 datacenter: 融资融券余额 / 行业估值 PE-PB（无 CORS，走 JSONP）
  *  - 腾讯 qt.gtimg:       申万一级行业当日涨跌（GBK 编码）
- *  - 兜底: 上方静态快照（拉取失败时保留显示）
+ *  - 兜底: localStorage 缓存的上次成功数据，再兜底才是上方静态快照
  */
-const LIVE={ts:null,sources:{},busy:false};
+const LIVE={ts:null,sources:{},busy:false,cacheTs:null,ttl:{}};  // ttl[k] = 该源上次成功拉取的时刻，用于日频节流
+
+/* 兜底缓存：把最近一次成功拉到的实时数据写进 localStorage。
+ * 接口全挂时显示「上次成功的数据 + 时间标签」，而不是退回 2026-08-24 的硬编码快照
+ * ——那个快照不会随时间更新，页面放得越久越具有误导性。 */
+const CKEY='finbench.cache.v2';   // v2：新增期指/涨跌停/换手率/行业估值/细分板块字段
+function saveCache(){
+  if(!LIVE.ts)return;
+  try{
+    localStorage.setItem(CKEY,JSON.stringify({
+      ts:LIVE.ts.getTime(),
+      indices:D.indices,
+      breadth:D.breadth,
+      margin:D.margin,
+      sectorTag:D.sectorTag,
+      sectors:D.sectors.map(s=>({code:s.code,chg:s.chg})),
+      futuresQuote:D.futuresQuote,
+      limitPool:D.limitPool,
+      turnover:D.turnover,
+      indVal:D.indVal,
+      boards:D.boards,
+      sentiment:D.sentiment
+    }));
+  }catch(e){}
+}
+function loadCache(){
+  try{
+    const c=JSON.parse(localStorage.getItem(CKEY)||'null');
+    if(!c||!c.ts)return false;
+    if(c.indices&&c.indices.length)D.indices=c.indices;
+    if(c.breadth)D.breadth=c.breadth;
+    if(c.margin)D.margin=c.margin;
+    if(c.sectors&&c.sectors.length){
+      const map={};c.sectors.forEach(s=>map[s.code]=s.chg);
+      D.sectors.forEach(s=>{if(map[s.code]!==undefined)s.chg=map[s.code];});
+    }
+    if(c.futuresQuote&&c.futuresQuote.list)D.futuresQuote=c.futuresQuote;
+    if(c.limitPool&&c.limitPool.date)D.limitPool=c.limitPool;
+    if(c.turnover)D.turnover=c.turnover;
+    if(c.indVal&&c.indVal.date)D.indVal=c.indVal;
+    if(c.boards&&c.boards.list&&c.boards.list.length)D.boards=c.boards;
+    if(c.sentiment&&typeof c.sentiment.value==='number')D.sentiment=c.sentiment;
+    D.sectorTag=c.sectorTag||null;
+    LIVE.cacheTs=new Date(c.ts);
+    computeSentiment();
+    return true;
+  }catch(e){return false;}
+}
 
 async function jget(url,timeout=9000){
   const ctl=new AbortController();
@@ -344,6 +382,22 @@ async function jget(url,timeout=9000){
     if(!r.ok)throw new Error('HTTP '+r.status);
     return await r.json();
   }finally{clearTimeout(t);}
+}
+
+/* JSONP：datacenter-web.eastmoney.com 不返回 CORS 头，浏览器直接 fetch 会被同源策略拦截，
+ * 改用 <script src=...&callback=fn> 注入取数（script 标签不受同源策略限制）。 */
+function jsonp(url,timeout=9000){
+  return new Promise((resolve,reject)=>{
+    const cb='__fb_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+    const s=document.createElement('script');
+    let done=false;
+    const t=setTimeout(()=>{if(!done){clean();reject(new Error('jsonp timeout'));}},timeout);
+    function clean(){done=true;clearTimeout(t);try{delete window[cb];}catch(e){}if(s.parentNode)s.remove();}
+    window[cb]=d=>{clean();resolve(d);};
+    s.onerror=()=>{if(!done){clean();reject(new Error('jsonp network error'));}};
+    s.src=url+(url.indexOf('?')>=0?'&':'?')+'callback='+cb;
+    document.head.appendChild(s);
+  });
 }
 
 /* 东财 push2 多镜像回退 + 单镜像重试（官方有多个编号镜像，限流独立，抗间歇性丢包） */
@@ -417,22 +471,113 @@ async function fetchSectors(){
   return false;
 }
 
-/* 涨跌家数：指数快照 f104/f105/f106 = 上涨/下跌/平盘家数（沪+深合并为全A） */
+/* 涨跌家数 + 市场换手率：一次请求带出两组数据。
+ * f104/f105/f106 = 上涨/下跌/平盘家数，只在沪(000001)、深(399001)两个市场指数上累加，
+ * 创业板指(399006)的 f104 是成分股口径，混进来会重复计数，所以只取它的 f8 换手率。 */
 async function fetchBreadth(){
-  const j=await emget('/api/qt/ulist.np/get?secids=1.000001,0.399001&fields=f104,f105,f106,f12&fltt=2');
+  const j=await emget('/api/qt/ulist.np/get?secids=1.000001,0.399001,0.399006&fields=f8,f104,f105,f106,f12&fltt=2');
+  const rows=((j.data&&j.data.diff)||[]);
   let up=0,down=0,flat=0;
-  ((j.data&&j.data.diff)||[]).forEach(x=>{
-    if(typeof x.f104==='number'&&x.f104>0){
+  rows.forEach(x=>{
+    if((x.f12==='000001'||x.f12==='399001')&&typeof x.f104==='number'&&x.f104>0){
       up+=x.f104;down+=(x.f105||0);flat+=(x.f106||0);
     }
   });
+  const to=c=>{const x=rows.find(r=>r.f12===c);return x&&typeof x.f8==='number'?+x.f8.toFixed(2):null;};
+  D.turnover={sh:to('000001'),sz:to('399001'),cyb:to('399006')};
   if(up+down>100){D.breadth={up,down,flat};return true;}
   return false;
 }
 
-/* 融资融券：东财 datacenter（单位：元 → 亿） */
+/* 股指期货：中金所市场号是 220（不是常见的 8/113/225，这个坑排查了很久）。
+ * 合约代码 = 品种 + 年份后两位 + 月份。枚举未来 6 个月，服务端只返回已挂牌的
+ * （实测请求 28 个返回 16 个），再按成交量 f5 挑出主力合约 —— 避免硬编码月份导致换月后失效。 */
+const FUT_CODE=[['IF','沪深300'],['IH','上证50'],['IC','中证500'],['IM','中证1000']];
+function futSecids(){
+  const now=new Date(),out=[];
+  for(let i=0;i<6;i++){
+    const d=new Date(now.getFullYear(),now.getMonth()+i,1);
+    const m=String(d.getFullYear()).slice(2)+String(d.getMonth()+1).padStart(2,'0');
+    FUT_CODE.forEach(c=>out.push('220.'+c[0]+m));
+  }
+  return out;
+}
+async function fetchFutures(){
+  const j=await emget('/api/qt/ulist.np/get?secids='+futSecids().join(',')+'&fields=f2,f3,f5,f6,f12&fltt=2&invt=2');
+  const rows=(j.data&&j.data.diff)||[];
+  const list=FUT_CODE.map(([code,name])=>{
+    const cand=rows.filter(x=>x.f12&&x.f12.indexOf(code)===0&&typeof x.f5==='number'&&x.f5>0&&typeof x.f2==='number'&&x.f2>0);
+    if(!cand.length)return null;
+    const m=cand.reduce((a,b)=>(b.f5||0)>(a.f5||0)?b:a);   // 成交量最大 = 主力
+    return {code,name,contract:m.f12,price:+m.f2.toFixed(1),chg:+(m.f3||0).toFixed(2),vol:m.f5};
+  }).filter(Boolean);
+  if(list.length<4)return false;
+  D.futuresQuote={list};
+  return true;
+}
+
+/* 涨停/跌停/强势股家数：东财 push2ex 三个池接口，盘中实时。
+ * 只要总家数 tc，所以 pagesize=1 即可。注意 sort 不能用 fund:asc（会返回空 pool），
+ * 用 fbt:asc。非交易日/未开盘时 tc 返回 0，属正常。 */
+const POOL_UT='7eea3edcaed734bea9cbfc24409ed989';
+const POOL_API={zt:'getTopicZTPool',dt:'getTopicDTPool',zb:'getTopicZBPool'};
+const ymd=d=>''+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+async function poolCount(kind){
+  const j=await jget('https://push2ex.eastmoney.com/'+POOL_API[kind]+'?ut='+POOL_UT
+    +'&dpt=wz.ztzt&Pageindex=0&pagesize=1&sort=fbt%3Aasc&date='+ymd(new Date())+'&_='+Date.now());
+  return (j&&j.data&&typeof j.data.tc==='number')?j.data.tc:null;
+}
+async function fetchLimitPool(){
+  const [zt,dt,zb]=await Promise.all(['zt','dt','zb'].map(k=>poolCount(k).catch(()=>null)));
+  if(zt===null&&dt===null&&zb===null)return false;
+  D.limitPool={zt,dt,zb,date:ymd(new Date())};
+  return true;
+}
+
+/* 东财细分行业当日估值（PE_TTM / PB_MRQ）：datacenter 无 CORS，走 JSONP。
+ * 日频数据。按 TRADE_DATE 降序拉 300 条，服务端返回的最新日期那批即当天全部板块
+ * （实测 9/1 有 127 个），一次请求拿全，不用分页。 */
+const INDVAL_URL='https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEINDUSTRY_DET&columns=BOARD_NAME,BOARD_CODE,TRADE_DATE,PE_TTM,PB_MRQ,NUM&source=WEB&sortColumns=TRADE_DATE&sortTypes=-1&pageNumber=1&pageSize=300';
+async function fetchIndVal(){
+  let j;
+  try{ j=await jsonp(INDVAL_URL); }catch(e){ j=await jget(INDVAL_URL); }
+  const rows=(j.result&&j.result.data)||[];
+  if(!rows.length||!rows[0].TRADE_DATE)return false;
+  const latest=(rows[0].TRADE_DATE||'').slice(0,10);
+  const list=rows.filter(x=>(x.TRADE_DATE||'').slice(0,10)===latest)
+    .map(x=>({name:x.BOARD_NAME,code:x.BOARD_CODE,
+      pe:typeof x.PE_TTM==='number'?+x.PE_TTM.toFixed(2):null,
+      pb:typeof x.PB_MRQ==='number'?+x.PB_MRQ.toFixed(2):null,n:x.NUM}))
+    .filter(x=>x.pe!==null&&x.pe>0)
+    .sort((a,b)=>a.pe-b.pe);
+  if(list.length<10)return false;
+  D.indVal={date:latest,list};
+  return true;
+}
+
+/* 东财细分板块涨跌幅 TOP：push2 clist，共 496 个板块（比申万 31 行业更细）。
+ * f3 涨跌幅 / f8 换手率 / f9 动态市盈率 / f128 领涨股 / f136 领涨股涨幅 / f104,f105 板块内涨跌家数。
+ * 注意 f23（市净率）在行业板块口径下恒为 "-"，不可用。 */
+async function fetchBoards(){
+  const j=await emget('/api/qt/clist/get?pn=1&pz=14&po=1&np=1&fltt=2&invt=2&fid=f3&fs=m%3A90%2Bt%3A2&fields=f3,f8,f9,f12,f14,f104,f105,f128,f136');
+  const rows=(j.data&&j.data.diff)||[];
+  if(!rows.length)return false;
+  D.boards={tag:'东财细分板块·496个',
+    list:rows.map(x=>({code:x.f12,name:x.f14,chg:+(x.f3||0).toFixed(2),
+      turn:typeof x.f8==='number'?+x.f8.toFixed(2):null,
+      pe:typeof x.f9==='number'&&x.f9>0?+x.f9.toFixed(1):null,
+      lead:x.f128||'',leadChg:typeof x.f136==='number'?+x.f136.toFixed(2):null,
+      up:x.f104||0,down:x.f105||0}))};
+  return true;
+}
+
+/* 融资融券：东财 datacenter（单位：元 → 亿）
+ * 该域名无 CORS 头，走 JSONP；JSONP 也失败再退回直连 fetch（本地/代理环境下可能可用）。 */
+const MARGIN_URL='https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPTA_RZRQ_LSHJ&columns=ALL&source=WEB&sortColumns=dim_date&sortTypes=-1&pageNumber=1&pageSize=1';
 async function fetchMargin(){
-  const j=await jget('https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPTA_RZRQ_LSHJ&columns=ALL&source=WEB&sortColumns=dim_date&sortTypes=-1&pageNumber=1&pageSize=1');
+  let j;
+  try{ j=await jsonp(MARGIN_URL); }
+  catch(e){ j=await jget(MARGIN_URL); }
   const d=j.result&&j.result.data&&j.result.data[0];
   if(d&&d.RZYE){
     D.margin={
@@ -447,18 +592,82 @@ async function fetchMargin(){
   return false;
 }
 
-/* 总调度：并行拉取，单源失败不影响其他源 */
-async function loadLive(){
+/* A股情绪指数（0-100）：纯前端合成，零新增网络请求。
+ * 用页面已接好的可直连 A 股源，按韭圈儿「多维度加权」思路合成为一个 0-100 分：
+ *   涨跌宽度 30% · 涨停效应 25% · 期指情绪 20% · 换手热度 15% · 杠杆情绪 10%
+ * 任一维度缺数据则自动剔除并归一化权重；全部缺失时 D.sentiment=null（卡片显示「等待数据」）。 */
+const clamp100=v=>Math.max(0,Math.min(100,v));
+function computeSentiment(){
+  const parts=[];
+  // 1) 涨跌宽度：上涨家数占（上涨+下跌）比
+  if(D.breadth&&(D.breadth.up+D.breadth.down)>50){
+    const r=D.breadth.up/(D.breadth.up+D.breadth.down);
+    parts.push({key:'breadth',name:'涨跌宽度',score:clamp100(r*100),
+      detail:`上涨 ${fmtNum(D.breadth.up)} / 下跌 ${fmtNum(D.breadth.down)}（占比 ${(r*100).toFixed(0)}%）`});
+  }
+  // 2) 涨停效应：涨停-跌停净额（炸板作为附注）
+  if(D.limitPool&&((D.limitPool.zt||0)+(D.limitPool.dt||0)>0)){
+    const zt=D.limitPool.zt||0,dt=D.limitPool.dt||0,net=zt-dt;
+    parts.push({key:'limit',name:'涨停效应',score:clamp100(50+net*0.6),
+      detail:`涨停 ${zt} / 跌停 ${dt} / 炸板 ${D.limitPool.zb||0}（净额 ${net>=0?'+':''}${net}）`});
+  }
+  // 3) 期指情绪：IF/IH/IC/IM 主力合约平均涨跌幅
+  if(D.futuresQuote&&D.futuresQuote.list&&D.futuresQuote.list.length){
+    const list=D.futuresQuote.list;
+    const avg=list.reduce((a,b)=>a+(b.chg||0),0)/list.length;
+    parts.push({key:'futures',name:'期指情绪',score:clamp100(50+avg*5),
+      detail:`${list.map(x=>x.code).join('/')} 主力平均 ${avg>=0?'+':''}${avg.toFixed(2)}%`});
+  }
+  // 4) 换手热度：沪+深+创业板换手率均值
+  if(D.turnover){
+    const vals=[D.turnover.sh,D.turnover.sz,D.turnover.cyb].filter(v=>typeof v==='number');
+    if(vals.length){
+      const turn=vals.reduce((a,b)=>a+b,0)/vals.length;
+      parts.push({key:'turnover',name:'换手热度',score:clamp100(30+(turn-1)*38),
+        detail:`全市场换手率均值 ${turn.toFixed(2)}%`});
+    }
+  }
+  // 5) 杠杆情绪：融资余额日变化（亿元）
+  if(D.margin&&typeof D.margin.rzChg==='number'){
+    parts.push({key:'margin',name:'杠杆情绪',score:clamp100(50+D.margin.rzChg*0.4),
+      detail:`融资余额 ${D.margin.rzChg>=0?'+':''}${D.margin.rzChg.toFixed(0)} 亿（${D.margin.date||''}）`});
+  }
+  if(!parts.length){D.sentiment=null;return;}
+  const W={breadth:0.30,limit:0.25,futures:0.20,turnover:0.15,margin:0.10};
+  const tw=Math.max(1e-6,parts.reduce((a,p)=>a+(W[p.key]||0),0));
+  const value=Math.round(parts.reduce((a,p)=>a+p.score*(W[p.key]||0),0)/tw);
+  D.sentiment={value, prev:(D.sentiment&&typeof D.sentiment.value==='number')?D.sentiment.value:null,
+    parts, ts:new Date()};
+}
+
+/* 总调度：并行拉取，单源失败不影响其他源。
+ * force=true 时强制重拉全部（手动刷新按钮）。
+ * 分两类：
+ *  - 实时源（指数/板块/涨跌家数/期指/涨跌停池/细分板块）：每轮都拉，跟着 60 秒轮询走
+ *  - 日频源（两融、行业估值）：一天才变一次，6 小时内只拉一次，别跟着 60 秒反复打
+ * 涨跌停池只在交易时段拉 —— 收盘后它恒为 0，没有意义。 */
+const DAILY_TTL=6*3600*1000;
+const DAILY_SRC={margin:fetchMargin, indVal:fetchIndVal};
+const REALTIME_SRC=[['indices',fetchIndices],['sectors',fetchSectors],['breadth',fetchBreadth],
+                    ['futures',fetchFutures],['boards',fetchBoards]];
+async function loadLive(force){
   if(LIVE.busy)return;
   LIVE.busy=true;
   $('#refresh').classList.add('spin');
-  const jobs=[['indices',fetchIndices],['sectors',fetchSectors],['breadth',fetchBreadth],['margin',fetchMargin]];
+  const jobs=REALTIME_SRC.slice();
+  if(force||inSession(new Date()))jobs.push(['limitPool',fetchLimitPool]);
+  Object.keys(DAILY_SRC).forEach(k=>{
+    if(force||!LIVE.ttl[k]||Date.now()-LIVE.ttl[k]>DAILY_TTL)jobs.push([k,DAILY_SRC[k]]);
+  });
   await Promise.all(jobs.map(async([k,fn])=>{
-    try{LIVE.sources[k]=await fn();}catch(e){LIVE.sources[k]=false;}
+    try{const ok=await fn();LIVE.sources[k]=ok;if(ok)LIVE.ttl[k]=Date.now();}
+    catch(e){LIVE.sources[k]=false;}
   }));
   LIVE.ts=new Date();
   LIVE.busy=false;
   $('#refresh').classList.remove('spin');
+  computeSentiment();
+  if(Object.values(LIVE.sources).some(Boolean))saveCache();
   updateLiveBadge();
   renderDash();
 }
@@ -470,9 +679,12 @@ function updateLiveBadge(){
   if(ok>0){
     b.style.color='var(--down)';b.style.background='rgba(0,182,122,.12)';b.style.borderColor='rgba(0,182,122,.25)';
     b.innerHTML=`<span class="dot" style="background:var(--down)"></span>已同步 ${ok}/${total}`;
+  }else if(LIVE.cacheTs){
+    b.style.color='var(--warn)';b.style.background='rgba(245,158,11,.12)';b.style.borderColor='rgba(245,158,11,.25)';
+    b.innerHTML=`<span class="dot" style="background:var(--warn)"></span>离线缓存 ${mdhm(LIVE.cacheTs)}`;
   }else{
     b.style.color='var(--dim)';b.style.background='';b.style.borderColor='';
-    b.innerHTML='<span class="dot" style="background:var(--dim)"></span>静态快照';
+    b.innerHTML='<span class="dot" style="background:var(--dim)"></span>静态快照 8/24';
   }
 }
 const CATS=[
@@ -483,22 +695,22 @@ const CATS=[
   {id:'sectors',name:'板块热度'}
 ];
 const REG=[
-  {id:'fg_composite',cat:'sentiment',name:'恐贪指数',desc:'Fear & Greed 综合值(7项子指标合成)',on:true,layout:'wide'},
-  {id:'fg_momentum',cat:'sentiment',name:'股价动量',desc:'标普500相对125日均线偏离',on:true,layout:'grid'},
-  {id:'fg_strength',cat:'sentiment',name:'股价强度',desc:'NYSE净52周新高占比',on:true,layout:'grid'},
-  {id:'fg_breadth',cat:'sentiment',name:'涨跌宽度',desc:'McClellan成交量总和指数',on:true,layout:'grid'},
-  {id:'fg_pcr',cat:'sentiment',name:'看跌/看涨期权',desc:'5日均Put/Call比率',on:true,layout:'grid'},
-  {id:'fg_safehaven',cat:'sentiment',name:'避险需求',desc:'股票vs国债20日回报差',on:true,layout:'grid'},
-  {id:'fg_junk',cat:'sentiment',name:'垃圾债需求',desc:'垃圾债vs投资级利差',on:true,layout:'grid'},
-  {id:'fg_volatility',cat:'sentiment',name:'市场波动率',desc:'VIX相对50日均值',on:true,layout:'grid'},
-  {id:'vix',cat:'sentiment',name:'VIX 波动率',desc:'恐慌指数 / 期权隐含波动率',on:true,layout:'wide'},
+  {id:'fg_composite',cat:'sentiment',name:'A股情绪指数',desc:'涨跌家数/涨停跌停/期指/换手率/两融 实时合成 0-100',on:true,layout:'wide'},
+  {id:'sent_breadth',cat:'sentiment',name:'涨跌宽度',desc:'上涨家数占比（核心宽度）',on:true,layout:'grid'},
+  {id:'sent_limit',cat:'sentiment',name:'涨停效应',desc:'涨停-跌停净额',on:true,layout:'grid'},
+  {id:'sent_futures',cat:'sentiment',name:'期指情绪',desc:'IF/IH/IC/IM 主力平均涨跌幅',on:true,layout:'grid'},
+  {id:'sent_turnover',cat:'sentiment',name:'换手热度',desc:'全市场换手率均值',on:true,layout:'grid'},
+  {id:'sent_margin',cat:'sentiment',name:'杠杆情绪',desc:'融资余额日变化',on:true,layout:'grid'},
   {id:'indices',cat:'indices',name:'大盘指数',desc:'上证/深证/创业板/恒指/标普/纳指',on:true},
   {id:'northbound',cat:'flow',name:'北向资金',desc:'沪深股通净流入(亿元)',on:true},
   {id:'margin',cat:'flow',name:'融资融券余额',desc:'两市融资余额与融券余额(亿元)',on:false},
-  {id:'futures',cat:'flow',name:'股指期货多空持仓',desc:'IF/IH/IC/IM 前20席位多空单(万手)',on:true,layout:'wide'},
-  {id:'breadth',cat:'breadth',name:'涨跌家数比',desc:'上涨/下跌/平盘 家数',on:true},
+  {id:'futures',cat:'flow',name:'股指期货',desc:'IF/IH/IC/IM 主力合约实时行情(自动识别主力月份)',on:true,layout:'wide'},
+  {id:'breadth',cat:'breadth',name:'涨跌家数比',desc:'上涨/下跌/平盘 家数 + 市场换手率',on:true},
+  {id:'limitPool',cat:'breadth',name:'涨跌停家数',desc:'涨停/跌停/炸板 家数(盘中实时)',on:true},
   {id:'valuation',cat:'breadth',name:'PE 估值分位',desc:'主要宽基指数 PE 历史分位',on:true},
-  {id:'sectors',cat:'sectors',name:'板块热度',desc:'申万一级行业当日涨跌·PE-TTM历史分位',on:true}
+  {id:'indVal',cat:'breadth',name:'行业估值',desc:'东财细分行业 PE-TTM / PB-MRQ(日频)',on:true},
+  {id:'sectors',cat:'sectors',name:'板块热度',desc:'申万一级行业当日涨跌·PE-TTM历史分位',on:true},
+  {id:'boards',cat:'sectors',name:'细分板块涨幅榜',desc:'东财496板块涨幅TOP·换手率·领涨股',on:true}
 ];
 
 /* ---------- state ---------- */
@@ -512,6 +724,7 @@ function enabled(id){return state[id]!==false;}
 const $=s=>document.querySelector(s);
 const upDown=v=>v>=0?'up':'down';
 const fchg=(v,dec=2)=>(v>=0?'+':'')+v.toFixed(dec)+'%';
+const mdhm=t=>`${t.getMonth()+1}/${t.getDate()} ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
 const fgLabel=v=>v<25?'极度恐惧':v<45?'恐惧':v<55?'中性':v<75?'贪婪':'极度贪婪';
 const fgColor=v=>v<25?'var(--fear)':v<55?'var(--neutral)':'var(--greed)';
 const heatColor=c=>{const a=Math.min(.85,.12+Math.abs(c)/4);return c>=0?`rgba(242,54,69,${a})`:`rgba(0,182,122,${a})`;};
@@ -534,92 +747,43 @@ function cardHeader(title,tag,delta){
 function fmtNum(n){return n.toLocaleString('zh-CN',{maximumFractionDigits:2});}
 
 function rFGComposite(){
-  const d=D.fearGreed;const v=d.value;const chg=v-d.prev;
+  const s=D.sentiment;
+  if(!s)return `<div class="card">
+    ${cardHeader('A股情绪指数','实时合成·5维')}
+    <div class="fg"><div class="info" style="width:100%;text-align:center;padding:20px 0">
+      <div class="lab" style="color:var(--dim)">等待实时数据…</div>
+      <div class="prev">由 涨跌家数·涨停跌停·期指·换手率·两融 实时合成</div>
+    </div></div></div>`;
+  const v=s.value;const chg=s.prev!=null?v-s.prev:0;
   return `<div class="card">
-    ${cardHeader('恐贪指数','CNN·美股·8/21收盘',`<span class="${upDown(chg)}">${chg>=0?'▲':'▼'} ${Math.abs(chg)}</span>`)}
+    ${cardHeader('A股情绪指数','实时合成·5维',s.prev!=null?`<span class="${upDown(chg)}">${chg>=0?'▲':'▼'} ${Math.abs(chg)}</span>`:'')}
     <div class="fg">
       ${gaugeSVG(v,90,92,66,13,180,104)}
       <div class="info">
         <div class="val" style="color:${fgColor(v)}">${v}</div>
         <div class="lab" style="color:${fgColor(v)}">${fgLabel(v)}</div>
-        <div class="prev">前值 ${d.prev} · 由 7 项子指标合成（见下方，可在设置中单独开关）</div>
+        <div class="prev">0–100 · 5 维加权合成（韭圈儿思路·纯前端）</div>
       </div>
     </div></div>`;
 }
 function fgScore(v){return `<span class="ms" style="color:${fgColor(v)}">${v}<small>${fgLabel(v)}</small></span>`;}
-function rFGMomentum(){
-  const c=D.fearGreed.momentum;const d=c.dev;const w=Math.min(48,Math.abs(d)/5*50);
+function rSentPart(key){
+  const s=D.sentiment;
+  if(!s)return `<div class="card mini-g"><div class="mg-top"><span class="mn">—</span></div><div class="mg-cap" style="color:var(--dim)">等待数据</div></div>`;
+  const p=s.parts.find(x=>x.key===key);
+  if(!p)return `<div class="card mini-g"><div class="mg-top"><span class="mn">${key}</span></div><div class="mg-cap" style="color:var(--dim)">暂无该维度</div></div>`;
+  const v=p.score;const w=Math.min(48,Math.abs(v-50)/50*50);
   return `<div class="card mini-g">
-    <div class="mg-top"><span class="mn">股价动量</span>${fgScore(c.score)}</div>
-    <div class="mg-viz"><div class="m-center"><div class="m-center-mid"></div><div class="m-center-fill" style="${d>=0?`left:50%;width:${w.toFixed(0)}%`:`right:50%;width:${w.toFixed(0)}%`};background:${d>=0?'var(--greed)':'var(--fear)'}"></div></div></div>
-    <div class="mg-cap">标普500 vs 125日线 ${d>=0?'+':''}${d.toFixed(1)}%</div>
+    <div class="mg-top"><span class="mn">${p.name}</span>${fgScore(Math.round(v))}</div>
+    <div class="mg-viz"><div class="m-center"><div class="m-center-mid"></div><div class="m-center-fill" style="${v>=50?`left:50%;width:${w.toFixed(0)}%`:`right:50%;width:${w.toFixed(0)}%`};background:${v>=50?'var(--greed)':'var(--fear)'}"></div></div></div>
+    <div class="mg-cap">${p.detail}</div>
   </div>`;
 }
-function rFGStrength(){
-  const c=D.fearGreed.strength;const d=c.highs;const w=Math.min(48,Math.abs(d)/2*50);
-  return `<div class="card mini-g">
-    <div class="mg-top"><span class="mn">股价强度</span>${fgScore(c.score)}</div>
-    <div class="mg-viz"><div class="m-center"><div class="m-center-mid"></div><div class="m-center-fill" style="${d>=0?`left:50%;width:${w.toFixed(0)}%`:`right:50%;width:${w.toFixed(0)}%`};background:${d>=0?'var(--greed)':'var(--fear)'}"></div></div></div>
-    <div class="mg-cap">NYSE 净52周新高 ${d>=0?'+':''}${d.toFixed(2)}%</div>
-  </div>`;
-}
-function rFGBreadth(){
-  const c=D.fearGreed.breadth;const v=c.mvs;const w=Math.min(48,Math.abs(v)/2000*50);
-  return `<div class="card mini-g">
-    <div class="mg-top"><span class="mn">涨跌宽度</span>${fgScore(c.score)}</div>
-    <div class="mg-viz"><div class="m-center"><div class="m-center-mid"></div><div class="m-center-fill" style="${v>=0?`left:50%;width:${w.toFixed(0)}%`:`right:50%;width:${w.toFixed(0)}%`};background:${v>=0?'var(--greed)':'var(--fear)'}"></div></div></div>
-    <div class="mg-cap">McClellan 成交量总和指数 ${v>=0?'+':''}${v.toFixed(0)}</div>
-  </div>`;
-}
-function rFGPCR(){
-  const c=D.fearGreed.pcr;const ps=c.ratio/(1+c.ratio)*100,cs=100-ps;
-  return `<div class="card mini-g">
-    <div class="mg-top"><span class="mn">看跌/看涨期权</span>${fgScore(c.score)}</div>
-    <div class="mg-viz"><div class="m-split">
-      <div class="seg" style="width:${ps.toFixed(0)}%;background:var(--fear)">P ${ps.toFixed(0)}%</div>
-      <div class="seg" style="width:${cs.toFixed(0)}%;background:var(--greed)">C ${cs.toFixed(0)}%</div>
-    </div></div>
-    <div class="mg-cap">Put/Call ${c.ratio.toFixed(2)} · 看跌 ${ps.toFixed(0)}% vs 看涨 ${cs.toFixed(0)}%</div>
-  </div>`;
-}
-function rFGSafeHaven(){
-  const c=D.fearGreed.safeHaven;const d=c.gap;const w=Math.min(48,Math.abs(d)/8*50);
-  return `<div class="card mini-g">
-    <div class="mg-top"><span class="mn">避险需求</span>${fgScore(c.score)}</div>
-    <div class="mg-viz"><div class="m-center"><div class="m-center-mid"></div><div class="m-center-fill" style="${d>=0?`left:50%;width:${w.toFixed(0)}%`:`right:50%;width:${w.toFixed(0)}%`};background:${d>=0?'var(--greed)':'var(--fear)'}"></div></div></div>
-    <div class="mg-cap">股票 vs 国债 20日回报差 ${d>=0?'+':''}${d.toFixed(2)}%</div>
-  </div>`;
-}
-function rFGJunk(){
-  const c=D.fearGreed.junk;
-  return `<div class="card mini-g">
-    <div class="mg-top"><span class="mn">垃圾债需求</span>${fgScore(c.score)}</div>
-    <div class="mg-viz"><div class="m-track sent"><div class="m-pin" style="left:calc(${c.score}% - 2px)"></div></div>
-      <div class="m-scales"><span>恐惧</span><span>贪婪</span></div></div>
-    <div class="mg-cap">垃圾债利差 ${c.spread.toFixed(2)}% · 利差越低需求越旺</div>
-  </div>`;
-}
-function rFGVol(){
-  const c=D.fearGreed.vol;const[r0,r1]=D.vix.range;const v=D.vix.value;
-  const p=Math.min(100,Math.max(0,(v-r0)/(r1-r0)*100));
-  return `<div class="card mini-g">
-    <div class="mg-top"><span class="mn">市场波动率</span>${fgScore(c.score)}</div>
-    <div class="mg-viz"><div class="m-track vix"><div class="m-pin" style="left:calc(${p.toFixed(1)}% - 2px)"></div></div>
-      <div class="m-scales"><span>${r0}</span><span>${r1}</span></div></div>
-    <div class="mg-cap">VIX ${v.toFixed(1)} · 50日均值 ${c.avg.toFixed(1)}</div>
-  </div>`;
-}
-
-function rVix(){
-  const d=D.vix;const[r0,r1]=d.range;const p=Math.min(1,Math.max(0,(d.value-r0)/(r1-r0)));
-  const chg=d.value-d.prev;
-  return `<div class="card">
-    ${cardHeader('VIX 波动率','CBOE·8/21收盘',`<span class="${upDown(-chg)}">${chg>=0?'▲':'▼'} ${Math.abs(chg).toFixed(1)}</span>`)}
-    <div class="vix"><span class="v">${d.value.toFixed(1)}</span><span class="u">点位</span></div>
-    <div class="level"><div class="mk" style="left:calc(${(p*100).toFixed(1)}% - 2px)"></div></div>
-    <div class="scales"><span>${r0} 冷静</span><span>20 警戒</span><span>${r1} 恐慌</span></div>
-  </div>`;
-}
+function rSentBreadth(){return rSentPart('breadth');}
+function rSentLimit(){return rSentPart('limit');}
+function rSentFutures(){return rSentPart('futures');}
+function rSentTurnover(){return rSentPart('turnover');}
+function rSentMargin(){return rSentPart('margin');}
 
 function rIndices(){
   return `<div class="card">
@@ -662,41 +826,98 @@ function rMargin(){
   </div>`;
 }
 
+/* 股指期货：前 20 席位多空持仓取不到（中金所 XML 无 CORS），改为展示主力合约实时行情。
+ * 合约月份不硬编码 —— 每轮枚举未来 6 个月，按成交量挑主力，换月自动跟随。 */
 function rFutures(){
-  const f=D.futures;
-  const hasData=f.every(x=>x.long!==null&&x.short!==null);
-  if(!hasData){
+  const q=D.futuresQuote;
+  if(!q||!q.list||!q.list.length){
     return `<div class="card">
-      ${cardHeader('股指期货多空持仓','中金所前20席位')}
-      <div class="note" style="text-align:center;padding:20px 0;color:var(--faint)">前 20 席位多空持仓数据暂未接入<br>（中金所日频盘后数据，后续补充）</div>
+      ${cardHeader('股指期货','中金所主力合约')}
+      <div class="note" style="text-align:center;padding:20px 0;color:var(--faint)">期指行情暂不可用<br>（非交易时段可能无最新报价）</div>
     </div>`;
   }
-  const gm=Math.max(...f.map(x=>Math.max(x.long,x.short)));
-  const netAll=f.reduce((s,x)=>s+x.long-x.short,0);
   return `<div class="card">
-    ${cardHeader('股指期货多空持仓','中金所前20席位',`<span class="${netAll>=0?'up':'down'}">合计净${netAll>=0?'多':'空'} ${Math.abs(netAll).toFixed(1)}万手</span>`)}
-    ${f.map(x=>{
-      const net=x.long-x.short;
-      const lw=x.long/gm*50,sw=x.short/gm*50;
-      return `<div class="fut-row">
-        <div class="fr-top"><span class="fr-nm"><b>${x.code}</b>${x.name}</span><span class="fr-net ${net>=0?'up':'down'}">净${net>=0?'多':'空'} ${Math.abs(net).toFixed(1)}万手</span></div>
-        <div class="fr-bar">
-          <span class="fr-val down">${x.short.toFixed(1)}</span>
-          <div class="fr-track">
-            <div class="fr-fill" style="right:50%;width:${sw.toFixed(1)}%;background:var(--down)"></div>
-            <div class="fr-fill" style="left:50%;width:${lw.toFixed(1)}%;background:var(--up)"></div>
-          </div>
-          <span class="fr-val up">${x.long.toFixed(1)}</span>
-        </div>
-      </div>`;
-    }).join('')}
-    <div class="fut-legend"><span><i class="lg g"></i>空单(万手) ◀</span><span>单位：万手 · 日频盘后更新</span><span>▶ 多单(万手) <i class="lg r"></i></span></div>
+    ${cardHeader('股指期货','中金所主力合约·实时',`<span class="${q.list.filter(x=>x.chg>=0).length>=2?'up':'down'}">${q.list.filter(x=>x.chg>=0).length}涨 / ${q.list.filter(x=>x.chg<0).length}跌</span>`)}
+    <div class="tbl">
+      <div class="th"><span class="c-nm">品种</span><span class="c-num">最新价</span><span class="c-num">涨跌</span><span class="c-tag">成交量</span></div>
+      ${q.list.map(x=>`
+        <div class="tr">
+          <span class="c-nm"><b style="color:var(--accent)">${x.code}</b> ${x.name}<span class="c-lead">${x.contract}</span></span>
+          <span class="c-num b">${fmtNum(x.price)}</span>
+          <span class="c-num b ${upDown(x.chg)}">${fchg(x.chg)}</span>
+          <span class="c-tag">${(x.vol/10000).toFixed(1)}万手</span>
+        </div>`).join('')}
+    </div>
+    <div class="fut-legend"><span>按成交量自动识别主力合约</span><span>前20席位持仓：中金所无CORS，取不到</span></div>
+  </div>`;
+}
+
+function rLimitPool(){
+  const d=D.limitPool;
+  const cell=(k,v,cls)=>`<div class="st3"><div class="k">${k}</div><div class="v ${cls}">${v===null?'—':v}</div><div class="u">家</div></div>`;
+  return `<div class="card">
+    ${cardHeader('涨跌停家数',d.date?`A股·${d.date}`:'A股')}
+    <div class="stat3">
+      ${cell('涨停',d.zt,'up')}
+      ${cell('跌停',d.dt,'down')}
+      ${cell('炸板',d.zb,'up')}
+    </div>
+    <div class="fut-legend"><span>盘中实时 · 收盘后为当日终值</span><span>炸板 = 触涨停后打开</span></div>
+  </div>`;
+}
+
+function rIndVal(){
+  const v=D.indVal;
+  if(!v.date||!v.list.length){
+    return `<div class="card">
+      ${cardHeader('行业估值','东财细分行业')}
+      <div class="note" style="text-align:center;padding:20px 0;color:var(--faint)">行业估值暂不可用</div>
+    </div>`;
+  }
+  const list=v.list.slice(0,10);
+  return `<div class="card">
+    ${cardHeader('行业估值',`东财细分行业·${v.date}`,`PE最低 ${list.length} 个`)}
+    <div class="tbl">
+      <div class="th"><span class="c-nm">行业</span><span class="c-num">PE-TTM</span><span class="c-num">PB</span><span class="c-tag">家数</span></div>
+      ${list.map(x=>`
+        <div class="tr">
+          <span class="c-nm">${x.name}</span>
+          <span class="c-num b">${x.pe.toFixed(1)}</span>
+          <span class="c-num" style="color:var(--dim)">${x.pb!==null?x.pb.toFixed(2):'—'}</span>
+          <span class="c-tag">${x.n||'—'}</span>
+        </div>`).join('')}
+    </div>
+    <div class="fut-legend"><span>${v.list.length} 个细分行业按 PE-TTM 升序取前 ${list.length}</span><span>日频 · 6小时拉取一次</span></div>
+  </div>`;
+}
+
+function rBoards(){
+  const b=D.boards;
+  if(!b.list||!b.list.length){
+    return `<div class="card">
+      ${cardHeader('细分板块涨幅榜','东财细分板块')}
+      <div class="note" style="text-align:center;padding:20px 0;color:var(--faint)">板块数据暂不可用</div>
+    </div>`;
+  }
+  return `<div class="card">
+    ${cardHeader('细分板块涨幅榜',b.tag||'东财细分板块')}
+    <div class="tbl">
+      <div class="th"><span class="c-nm">板块</span><span class="c-num">涨跌</span><span class="c-num">换手</span><span class="c-tag">PE</span></div>
+      ${b.list.map(x=>`
+        <div class="tr">
+          <span class="c-nm">${x.name}${x.lead?`<span class="c-lead">领涨 ${x.lead}${x.leadChg!==null?' '+fchg(x.leadChg):''}</span>`:''}</span>
+          <span class="c-num b ${upDown(x.chg)}">${fchg(x.chg)}</span>
+          <span class="c-num" style="color:var(--dim)">${x.turn!==null?x.turn.toFixed(1)+'%':'—'}</span>
+          <span class="c-tag">${x.pe!==null?x.pe:'—'}</span>
+        </div>`).join('')}
+    </div>
+    <div class="fut-legend"><span>共 496 个板块按涨幅取前 ${b.list.length}</span><span>比申万31行业更细 · 盘中实时</span></div>
   </div>`;
 }
 
 function rBreadth(){
   const d=D.breadth;const t=d.up+d.down+d.flat;
-  const w=v=>(v/t*100).toFixed(1);
+  const w=v=>t>0?(v/t*100).toFixed(1):'0.0';   // t=0 时直接算会渲染出 NaN%
   return `<div class="card">
     ${cardHeader('涨跌家数比','A股')}
     <div class="br-stack">
@@ -705,6 +926,9 @@ function rBreadth(){
       <div class="seg down" style="width:${w(d.down)}%;background:var(--down)">${w(d.down)}%</div>
     </div>
     <div class="br-legend"><span><b class="up">${fmtNum(d.up)}</b> 上涨</span><span><b style="color:var(--dim)">${fmtNum(d.flat)}</b> 平盘</span><span><b class="down">${fmtNum(d.down)}</b> 下跌</span></div>
+    ${D.turnover?`<div class="flow" style="margin-top:11px;padding-top:10px;border-top:1px dashed var(--border)">
+      <div class="row"><span class="lbl">换手率</span><span class="amt" style="width:auto;flex:1;text-align:left;color:var(--dim);font-weight:600">沪 ${D.turnover.sh!==null?D.turnover.sh.toFixed(2)+'%':'—'} · 深 ${D.turnover.sz!==null?D.turnover.sz.toFixed(2)+'%':'—'} · 创 ${D.turnover.cyb!==null?D.turnover.cyb.toFixed(2)+'%':'—'}</span></div>
+    </div>`:''}
   </div>`;
 }
 
@@ -750,9 +974,9 @@ function rSectors(){
 
 const RENDER={
   fg_composite:rFGComposite,
-  fg_momentum:rFGMomentum,fg_strength:rFGStrength,fg_breadth:rFGBreadth,
-  fg_pcr:rFGPCR,fg_safehaven:rFGSafeHaven,fg_junk:rFGJunk,fg_volatility:rFGVol,
-  vix:rVix,indices:rIndices,northbound:rNorthbound,margin:rMargin,futures:rFutures,breadth:rBreadth,valuation:rValuation,sectors:rSectors
+  sent_breadth:rSentBreadth,sent_limit:rSentLimit,sent_futures:rSentFutures,sent_turnover:rSentTurnover,sent_margin:rSentMargin,
+  indices:rIndices,northbound:rNorthbound,margin:rMargin,futures:rFutures,breadth:rBreadth,valuation:rValuation,sectors:rSectors,
+  limitPool:rLimitPool,indVal:rIndVal,boards:rBoards
 };
 
 function renderDash(){
@@ -805,27 +1029,44 @@ $('.tabbar').addEventListener('click',e=>{
 });
 
 /* clock + date */
-function tick(){const n=new Date();const h=n.getHours();const m=String(n.getMinutes()).padStart(2,'0');$('#clock').textContent=`${h}:${m}`;
+function tick(){const n=new Date();
   const w=['日','一','二','三','四','五','六'][n.getDay()];
   const hm=t=>`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
+  const rhythm=inSession(n)?'盘中 60s 轮询':'非交易时段 30min';
   $('#today').textContent=LIVE.ts
-    ?`${n.getMonth()+1}月${n.getDate()}日 · 周${w} · 实时更新 ${hm(LIVE.ts)}`
+    ?`${n.getMonth()+1}月${n.getDate()}日 · 周${w} · 更新于 ${hm(LIVE.ts)} · ${rhythm}`
     :DATA_DATE;
 }
 tick();setInterval(tick,10000);
 
 /* refresh: fetch live data from public APIs (runs entirely in the browser) */
-$('#refresh').addEventListener('click',()=>loadLive());
+$('#refresh').addEventListener('click',()=>loadLive(true));
 
-/* init */
+/* init：先恢复上次成功拉到的数据（若有），再发起网络请求。
+ * 这样首屏不会是空白/硬编码旧值，断网时也能看到「上次成功的数据 + 时间标签」。 */
+loadCache();
 renderDash();renderSettings();
 loadLive();
 
-/* 数据更新策略：低频按需 —— 打开页面拉一次；切回前台时若数据已过期(>30min)再拉一次；
- * 收盘后/开盘前打开 App 即自动拿到最新收盘数据，不做盘中轮询。手动点刷新按钮始终可用。 */
-const STALE_MS=30*60*1000;
+/* 数据更新策略：按是否开盘分两档 ——
+ *   交易时段（周一至周五 9:30-11:30 / 13:00-15:00）：每 60 秒一轮，跟住盘中变化
+ *   非交易时段（盘前/盘后/午休/周末）：降到 30 分钟一轮，避免无意义请求
+ *   页面切到后台时不轮询；切回前台立即按当前档位判断是否补拉。手动点刷新始终可用。
+ * 说明：只判断星期与时刻，不判断法定节假日 —— 节假日多发的几轮请求对接口无压力
+ *（实测单次 12ms、连续 10 次无限流），换来的是不用维护节假日表。 */
+const POLL_SESSION=60*1000, POLL_IDLE=30*60*1000, TICK_MS=15000;
+function inSession(d){
+  const w=d.getDay(); if(w===0||w===6)return false;
+  const m=d.getHours()*60+d.getMinutes();
+  return (m>=570&&m<690)||(m>=780&&m<900);
+}
+const staleMs=()=>inSession(new Date())?POLL_SESSION:POLL_IDLE;
+setInterval(()=>{
+  if(document.visibilityState!=='visible'||LIVE.busy)return;
+  if(!LIVE.ts||Date.now()-LIVE.ts.getTime()>staleMs())loadLive();
+},TICK_MS);
 document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible'&&(!LIVE.ts||Date.now()-LIVE.ts.getTime()>STALE_MS))loadLive();
+  if(document.visibilityState==='visible'&&(!LIVE.ts||Date.now()-LIVE.ts.getTime()>staleMs()))loadLive();
 });
 
 /* PWA */
