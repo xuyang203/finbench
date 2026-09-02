@@ -32,16 +32,11 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   box-shadow:0 0 0 12px #0b0b0d,0 0 0 13px #2a2a2e,0 40px 90px rgba(0,0,0,.7);display:flex;flex-direction:column}
 @media(max-width:520px){.stage{padding:0;background:var(--bg)}.device{width:100vw;height:100vh;max-height:100vh;border-radius:0;box-shadow:none}}
 
-/* dynamic island + home indicator */
-.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#000;border-radius:20px;z-index:60}
-@media(max-width:520px){.island{top:max(11px,var(--safe-t))}}
-.home-bar{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:rgba(255,255,255,.55);z-index:60}
-@media(max-width:520px){.home-bar{bottom:max(7px,calc(var(--safe-b) + 2px))}}
 
 /* app shell */
-.app{flex:1;display:flex;flex-direction:column;min-height:0;position:relative;padding-top:46px}
+.app{flex:1;display:flex;flex-direction:column;min-height:0;position:relative}
 @media(max-width:520px){.app{padding-top:var(--safe-t)}}
-.view{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px 96px}
+.view{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px calc(80px + var(--safe-b))}
 .view[hidden]{display:none}
 
 /* header */
@@ -89,6 +84,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .flow{display:flex;flex-direction:column;gap:10px}
 .flow .row{display:flex;align-items:center;gap:10px}
 .flow .lbl{width:74px;font-size:12px;color:var(--dim);flex-shrink:0}
+.utag{font-size:10px;font-style:normal;color:var(--faint);margin-left:5px;opacity:.75}
 .flow .bar{flex:1;height:18px;border-radius:9px;background:var(--surface-2);overflow:hidden;position:relative}
 .flow .fill{position:absolute;left:50%;top:0;height:100%;border-radius:9px;transform-origin:left center}
 .flow .amt{width:88px;text-align:right;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;flex-shrink:0}
@@ -212,8 +208,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 <body>
 <div class="stage">
   <div class="device">
-    <div class="island"></div>
-
     <div class="app">
       <!-- DASHBOARD -->
       <section class="view" id="view-dash">
@@ -257,8 +251,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
         </button>
       </nav>
     </div>
-
-    <div class="home-bar"></div>
   </div>
 </div>
 
@@ -280,7 +272,8 @@ const D = {
     {name:'标普500',mkt:'美股',val:7674.37,chg:0.43},
     {name:'纳斯达克',mkt:'美股',val:26180.45,chg:0.43}
   ],
-  northbound:{ net:-64.12, sh:-54.32, sz:-9.81 },  // 2026-08-21 收盘
+  mainflow:{ main:null, xl:null, big:null, sm:null, date:null },  // 全市场主力资金流(板块汇总, 近似万得全A), 实时计算
+  usSectors:null,        // 美股隔夜板块行情(标普11板块SPDR ETF) → {list:[{code,name,chg,px,amt}]}
   margin:{ rz:26333.15, rzChg:-62.07, rq:270.54, rqChg:2.20 }, // 2026-08-21
   futures:[  // 前20席位持仓：中金所 XML 无 CORS 且为 XML 格式，纯前端取不到，保留结构占位
     {code:'IF',name:'沪深300',long:null,short:null},
@@ -346,7 +339,9 @@ function saveCache(){
       turnover:D.turnover,
       indVal:D.indVal,
       boards:D.boards,
-      sentiment:D.sentiment
+      sentiment:D.sentiment,
+      mainflow:D.mainflow,
+      usSectors:D.usSectors
     }));
   }catch(e){}
 }
@@ -367,6 +362,8 @@ function loadCache(){
     if(c.indVal&&c.indVal.date)D.indVal=c.indVal;
     if(c.boards&&c.boards.list&&c.boards.list.length)D.boards=c.boards;
     if(c.sentiment&&typeof c.sentiment.value==='number')D.sentiment=c.sentiment;
+    if(c.mainflow&&typeof c.mainflow.main==='number')D.mainflow=c.mainflow;
+    if(c.usSectors&&c.usSectors.list&&c.usSectors.list.length)D.usSectors=c.usSectors;
     D.sectorTag=c.sectorTag||null;
     LIVE.cacheTs=new Date(c.ts);
     computeSentiment();
@@ -571,6 +568,61 @@ async function fetchBoards(){
   return true;
 }
 
+/* 全市场主力资金流：东财行业板块(m:90+t:2, 共496个)分页拉全量累加，等价全A口径(近似万得全A)
+ * 单页最多100行，故分页 pn=1..5；fields f62主力 f66超大单 f72大单 f78小单(单位元)，/1e8→亿 */
+async function fetchMainFlow(){
+  try{
+    const fields='f12,f14,f62,f66,f72,f78,f184';
+    const mk=pn=>`/api/qt/clist/get?pn=${pn}&pz=100&po=1&np=1&fltt=2&invt=2&fid=f62&fs=m%3A90%2Bt%3A2&fields=${fields}`;
+    const js=await Promise.all([1,2,3,4,5].map(pn=>emget(mk(pn))));
+    let main=0,xl=0,big=0,sm=0,cnt=0;
+    js.forEach(j=>{((j.data&&j.data.diff)||[]).forEach(x=>{main+=(x.f62||0);xl+=(x.f66||0);big+=(x.f72||0);sm+=(x.f78||0);cnt++;});});
+    if(!cnt)return false;
+    const d=new Date();const ds=`${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    D.mainflow={main:+(main/1e8).toFixed(1),xl:+(xl/1e8).toFixed(1),big:+(big/1e8).toFixed(1),sm:+(sm/1e8).toFixed(1),date:ds};
+    return true;
+  }catch(e){return false;}
+}
+
+/* 美股隔夜板块行情：东财美股 ETF 用 107.{ticker} 前缀（已实测）
+ * 原 11 板块 SPDR + 细分行业 ETF 共 34 只（SOXX/SMH/ICLN/IBB 东财无行情已剔除，已实测验证）
+ * f3=当日涨跌幅%，隔夜=最近美股交易日收盘(美东16:00≈北京次日4:00) */
+const US_GRP={tech:'科技',comm:'通信',fin:'金融',energy:'能源',indu:'工业',mat:'材料',cons:'消费',util:'公用',health:'医疗',re:'地产'};
+const US_SEC=[
+ {t:'XLK',n:'科技',g:'tech'},{t:'HACK',n:'网络安全',g:'tech'},{t:'IGV',n:'软件',g:'tech'},{t:'FDN',n:'互联网',g:'tech'},
+ {t:'XLC',n:'通信',g:'comm'},{t:'JETS',n:'航空',g:'comm'},
+ {t:'XLF',n:'金融',g:'fin'},{t:'KBE',n:'银行',g:'fin'},{t:'KRE',n:'地区银行',g:'fin'},{t:'KIE',n:'保险',g:'fin'},{t:'IAI',n:'券商',g:'fin'},
+ {t:'XLE',n:'能源',g:'energy'},{t:'XOP',n:'油气开采',g:'energy'},{t:'OIH',n:'油服',g:'energy'},{t:'XES',n:'油气设备',g:'energy'},
+ {t:'XLI',n:'工业',g:'indu'},{t:'ITA',n:'军工航天',g:'indu'},{t:'PAVE',n:'基建',g:'indu'},
+ {t:'XLB',n:'材料',g:'mat'},{t:'XME',n:'金属采矿',g:'mat'},{t:'MOO',n:'农业',g:'mat'},
+ {t:'XLP',n:'必需消费',g:'cons'},{t:'XLY',n:'可选消费',g:'cons'},{t:'XRT',n:'零售',g:'cons'},{t:'XHB',n:'住宅建筑',g:'cons'},{t:'PEJ',n:'休闲娱乐',g:'cons'},
+ {t:'XLU',n:'公用事业',g:'util'},{t:'TAN',n:'太阳能',g:'util'},
+ {t:'XLV',n:'医疗',g:'health'},{t:'XBI',n:'生物科技',g:'health'},{t:'IHI',n:'医疗器械',g:'health'},{t:'XHS',n:'医疗服务',g:'health'},
+ {t:'XLRE',n:'房地产',g:'re'},{t:'IYR',n:'地产',g:'re'}
+];
+async function fetchUsSectors(){
+  try{
+    const half=Math.ceil(US_SEC.length/2);
+    const batches=[US_SEC.slice(0,half),US_SEC.slice(half)];
+    const js=await Promise.all(batches.map(b=>{
+      const sec=b.map(x=>'107.'+x.t).join(',');
+      return emget(`/api/qt/ulist.np/get?secids=${sec}&fields=f12,f14,f2,f3,f6&fltt=2&invt=2`);
+    }));
+    const rows=[];
+    js.forEach(j=>((j.data&&j.data.diff)||[]).forEach(x=>rows.push(x)));
+    if(!rows.length)return false;
+    const meta={}; US_SEC.forEach(s=>meta[s.t]={n:s.n,g:s.g});
+    const list=rows.map(x=>{const m=meta[x.f12]||{};
+      return {code:x.f12,name:m.n||x.f14,grp:m.g||'',
+        chg:typeof x.f3==='number'?+x.f3.toFixed(2):null,
+        px:typeof x.f2==='number'?+x.f2.toFixed(2):null,
+        amt:typeof x.f6==='number'?+(x.f6/1e8).toFixed(1):null};}).filter(x=>x.chg!==null);
+    if(!list.length)return false;
+    D.usSectors={list};
+    return true;
+  }catch(e){return false;}
+}
+
 /* 融资融券：东财 datacenter（单位：元 → 亿）
  * 该域名无 CORS 头，走 JSONP；JSONP 也失败再退回直连 fetch（本地/代理环境下可能可用）。 */
 const MARGIN_URL='https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPTA_RZRQ_LSHJ&columns=ALL&source=WEB&sortColumns=dim_date&sortTypes=-1&pageNumber=1&pageSize=1';
@@ -647,7 +699,7 @@ function computeSentiment(){
  *  - 日频源（两融、行业估值）：一天才变一次，6 小时内只拉一次，别跟着 60 秒反复打
  * 涨跌停池只在交易时段拉 —— 收盘后它恒为 0，没有意义。 */
 const DAILY_TTL=6*3600*1000;
-const DAILY_SRC={margin:fetchMargin, indVal:fetchIndVal};
+const DAILY_SRC={margin:fetchMargin, indVal:fetchIndVal, usSectors:fetchUsSectors};
 const REALTIME_SRC=[['indices',fetchIndices],['sectors',fetchSectors],['breadth',fetchBreadth],
                     ['futures',fetchFutures],['boards',fetchBoards]];
 async function loadLive(force){
@@ -656,6 +708,7 @@ async function loadLive(force){
   $('#refresh').classList.add('spin');
   const jobs=REALTIME_SRC.slice();
   if(force||inSession(new Date()))jobs.push(['limitPool',fetchLimitPool]);
+  if(force||tradingDay(new Date()))jobs.push(['mainflow',fetchMainFlow]);
   Object.keys(DAILY_SRC).forEach(k=>{
     if(force||!LIVE.ttl[k]||Date.now()-LIVE.ttl[k]>DAILY_TTL)jobs.push([k,DAILY_SRC[k]]);
   });
@@ -692,7 +745,8 @@ const CATS=[
   {id:'indices',name:'大盘指数'},
   {id:'flow',name:'资金流向'},
   {id:'breadth',name:'估值与宽度'},
-  {id:'sectors',name:'板块热度'}
+  {id:'sectors',name:'板块热度'},
+  {id:'global',name:'美股隔夜'}
 ];
 const REG=[
   {id:'fg_composite',cat:'sentiment',name:'A股情绪指数',desc:'涨跌家数/涨停跌停/期指/换手率/两融 实时合成 0-100',on:true,layout:'wide'},
@@ -702,7 +756,7 @@ const REG=[
   {id:'sent_turnover',cat:'sentiment',name:'换手热度',desc:'全市场换手率均值',on:true,layout:'grid'},
   {id:'sent_margin',cat:'sentiment',name:'杠杆情绪',desc:'融资余额日变化',on:true,layout:'grid'},
   {id:'indices',cat:'indices',name:'大盘指数',desc:'上证/深证/创业板/恒指/标普/纳指',on:true},
-  {id:'northbound',cat:'flow',name:'北向资金',desc:'沪深股通净流入(亿元)',on:true},
+  {id:'mainflow',cat:'flow',name:'主力资金流',desc:'全市场主力净流入(近似万得全A)',on:true},
   {id:'margin',cat:'flow',name:'融资融券余额',desc:'两市融资余额与融券余额(亿元)',on:false},
   {id:'futures',cat:'flow',name:'股指期货',desc:'IF/IH/IC/IM 主力合约实时行情(自动识别主力月份)',on:true,layout:'wide'},
   {id:'breadth',cat:'breadth',name:'涨跌家数比',desc:'上涨/下跌/平盘 家数 + 市场换手率',on:true},
@@ -710,7 +764,8 @@ const REG=[
   {id:'valuation',cat:'breadth',name:'PE 估值分位',desc:'主要宽基指数 PE 历史分位',on:true},
   {id:'indVal',cat:'breadth',name:'行业估值',desc:'东财细分行业 PE-TTM / PB-MRQ(日频)',on:true},
   {id:'sectors',cat:'sectors',name:'板块热度',desc:'申万一级行业当日涨跌·PE-TTM历史分位',on:true},
-  {id:'boards',cat:'sectors',name:'细分板块涨幅榜',desc:'东财496板块涨幅TOP·换手率·领涨股',on:true}
+  {id:'boards',cat:'sectors',name:'细分板块涨幅榜',desc:'东财496板块涨幅TOP·换手率·领涨股',on:true},
+  {id:'us_sectors',cat:'global',name:'美股隔夜板块',desc:'美股34只细分行业ETF隔夜涨跌(科技/金融/能源/工业/材料/消费/公用/医疗/地产/通信)',on:true,layout:'wide'}
 ];
 
 /* ---------- state ---------- */
@@ -798,19 +853,39 @@ function rIndices(){
   </div>`;
 }
 
-function rNorthbound(){
-  const d=D.northbound;const net=d.net;
-  const bar=v=>{const w=Math.min(48,Math.abs(v)/80*48);const pos=v>=0;
+function rMainFlow(){
+  const d=D.mainflow;
+  if(!d||typeof d.main!=='number'){
+    return `<div class="card">${cardHeader('全市场主力资金流','—','')}<div class="flow"><div class="row"><span class="lbl">—</span><span class="amt">等待实时数据</span></div></div><div class="fut-legend" style="margin-top:8px"><span>全市场板块资金流汇总 · 近似万得全A口径（非万得官方）</span></div></div>`;
+  }
+  const tot=d.main;
+  const bar=v=>{const w=Math.min(48,Math.abs(v)/300*48);const pos=v>=0;
     return `<div class="bar"><div class="fill" style="width:${w.toFixed(0)}%;background:${pos?'var(--up)':'var(--down)'};${!pos?'transform:translateX(-100%)':''}"></div></div>`;};
-  const fmt=v=>`${v>=0?'+':''}${v.toFixed(1)}亿`;
+  const fmt=v=>`${v>=0?'+':''}${v.toFixed(0)}亿`;
+  const rows=[['机构',d.xl],['主力',d.big],['散户',d.sm]];
   return `<div class="card">
-    ${cardHeader('北向资金','A股·8/21收盘',`<span class="${net>=0?'up':'down'}">${fmt(net)}</span>`)}
+    ${cardHeader('全市场主力资金流',`近似万得全A·${d.date}`,`<span class="${tot>=0?'up':'down'}">${fmt(tot)}</span>`)}
     <div class="flow">
-      <div class="row"><span class="lbl">沪股通</span>${bar(d.sh)}<span class="amt ${d.sh>=0?'up':'down'}">${fmt(d.sh)}</span></div>
-      <div class="row"><span class="lbl">深股通</span>${bar(d.sz)}<span class="amt ${d.sz>=0?'up':'down'}">${fmt(d.sz)}</span></div>
-      <div class="row flow total"><span class="lbl">净流入</span><span class="amt ${net>=0?'up':'down'}" style="font-size:14px">${fmt(net)}</span></div>
+      ${rows.map(([l,v])=>`<div class="row"><span class="lbl">${l}</span>${bar(v)}<span class="amt ${v>=0?'up':'down'}">${fmt(v)}</span></div>`).join('')}
     </div>
-    <div class="fut-legend" style="margin-top:8px"><span>实时净流入自2024/08起停止披露 · 显示最近可得收盘值</span></div>
+    <div class="fut-legend" style="margin-top:8px"><span>全市场板块资金流汇总 · 盘中当日累计 · 近似万得全A口径（非万得官方）</span></div>
+  </div>`;
+}
+
+function rUsSectors(){
+  const d=D.usSectors;
+  if(!d||!d.list||!d.list.length){
+    return `<div class="card">${cardHeader('美股隔夜板块','美股·美东收盘','')}<div class="note" style="text-align:center;padding:20px 0;color:var(--faint)">等待隔夜行情</div></div>`;
+  }
+  const up=d.list.filter(x=>x.chg>0).length,down=d.list.length-up;
+  const sorted=d.list.slice().sort((a,b)=>b.chg-a.chg);
+  const rowHtml=x=>`<div class="row" style="justify-content:space-between"><span class="lbl" style="width:auto;flex:1">${x.name}${x.grp?`<i class="utag">${US_GRP[x.grp]||x.grp}</i>`:''}</span><span class="amt ${x.chg>=0?'up':'down'}">${x.chg>=0?'+':''}${x.chg.toFixed(2)}%</span></div>`;
+  const colA=[],colB=[]; sorted.forEach((x,i)=>(i%2?colB:colA).push(x));
+  const cols=[colA,colB].map(c=>`<div class="flow" style="gap:3px;margin-top:6px;flex:1;min-width:0">${c.map(rowHtml).join('')}</div>`).join('');
+  return `<div class="card">
+    ${cardHeader('美股隔夜板块',`细分行业 ${d.list.length} · 涨${up}/跌${down}`,'')}
+    <div style="display:flex;gap:14px">${cols}</div>
+    <div class="fut-legend" style="margin-top:8px"><span>美股细分行业 ETF · 美东最新收盘(隔夜) · 东财行情</span></div>
   </div>`;
 }
 
@@ -975,8 +1050,8 @@ function rSectors(){
 const RENDER={
   fg_composite:rFGComposite,
   sent_breadth:rSentBreadth,sent_limit:rSentLimit,sent_futures:rSentFutures,sent_turnover:rSentTurnover,sent_margin:rSentMargin,
-  indices:rIndices,northbound:rNorthbound,margin:rMargin,futures:rFutures,breadth:rBreadth,valuation:rValuation,sectors:rSectors,
-  limitPool:rLimitPool,indVal:rIndVal,boards:rBoards
+  indices:rIndices,mainflow:rMainFlow,margin:rMargin,futures:rFutures,breadth:rBreadth,valuation:rValuation,sectors:rSectors,
+  limitPool:rLimitPool,indVal:rIndVal,boards:rBoards,us_sectors:rUsSectors
 };
 
 function renderDash(){
@@ -1060,6 +1135,7 @@ function inSession(d){
   const m=d.getHours()*60+d.getMinutes();
   return (m>=570&&m<690)||(m>=780&&m<900);
 }
+function tradingDay(d){const w=d.getDay();return w!==0&&w!==6;}
 const staleMs=()=>inSession(new Date())?POLL_SESSION:POLL_IDLE;
 setInterval(()=>{
   if(document.visibilityState!=='visible'||LIVE.busy)return;

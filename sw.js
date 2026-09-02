@@ -1,4 +1,4 @@
-const CACHE = 'finbench-v13';
+const CACHE = 'finbench-v18';
 const SHELL = ['./', './index.html', './manifest.json', './icon.svg'];
 self.addEventListener('install', e => {
   self.skipWaiting();
