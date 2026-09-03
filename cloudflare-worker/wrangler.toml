@@ -1,0 +1,6 @@
+name = "jqk-worker"
+main = "worker.js"
+compatibility_date = "2024-09-23"
+
+# authtoken 通过 `wrangler secret put JQK_TOKEN` 注入，绝不写进本文件/提交仓库。
+# 浏览器调用本 Worker 即可拿到明文 JSON：{ value, status, date, updatedAt }

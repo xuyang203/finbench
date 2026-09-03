@@ -67,9 +67,20 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .fg .val{font-size:34px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
 .fg .lab{font-size:14px;font-weight:700;margin-top:4px}
 .fg .prev{font-size:11px;color:var(--dim);margin-top:6px}
+.fg .prev.jqk{cursor:pointer;user-select:none;border-top:1px dashed var(--border);padding-top:5px;margin-top:7px}
+.fg .prev.jqk:hover{color:var(--text)}
+.jqkedit{opacity:.5;font-size:10px;margin-left:3px}
 .fg .comps{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .fg .comp{font-size:10px;color:var(--dim);background:var(--surface-2);padding:3px 7px;border-radius:8px}
 .fg .comp b{color:var(--text)}
+/* 韭圈儿 6 大成分指标网格 */
+.jqk-comps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px}
+.jqk-comp{background:var(--surface-2);border-radius:10px;padding:10px 8px;text-align:center}
+.jqk-comp .c-name{font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jqk-comp .c-val{font-size:19px;font-weight:800;margin-top:4px;font-variant-numeric:tabular-nums;line-height:1.1}
+.jqk-comp .c-val small{font-size:11px;font-weight:600;color:var(--dim);margin-left:2px}
+.jqk-comp .c-status{font-size:11px;margin-top:3px;font-weight:600}
+@media (max-width:560px){.jqk-comps{grid-template-columns:repeat(2,1fr)}}
 
 
 /* indices row */
@@ -257,12 +268,14 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 <script>
 /* ---------- data model (real-time, 纯前端合成) ----------
  * 指数/涨跌家数/换手率/期指/涨跌停/板块/两融/行业估值：均来自页面已接好的可直连 A 股源
- * A股情绪指数(0-100)：由 computeSentiment() 用以上源实时合成（韭圈儿思路，零后端）
+ * 韭圈儿恐贪指数(0-100) + 6 大成分指标：由 loadJqk() 从 Worker / GitHub raw / 本地 jqk.json 自动载入（签名与 AES 解密在服务端完成）
  * 期货前20席位暂缺标注为 null
  */
 const DATA_DATE='2026-08-24 12:30 盘中';
+function todayMD(){const d=new Date();return ('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
 const D = {
-  sentiment:null,   // A股情绪指数(0-100)：由 computeSentiment() 实时合成，见下方
+  jqk:{value:null,date:null},  // 韭圈儿官方恐贪指数(0-100)：由 loadJqk 自动载入（Worker / GitHub raw / jqk.json）
+  jqkComps:[],                 // 韭圈儿 6 大成分指标：北上资金/股价强度/指数波动/升贴水率/避险天堂/杠杆水平
   indices:[
     {name:'上证指数',mkt:'A股',val:3870.53,chg:-0.89},
     {name:'深证成指',mkt:'A股',val:13707.61,chg:-2.74},
@@ -339,9 +352,10 @@ function saveCache(){
       turnover:D.turnover,
       indVal:D.indVal,
       boards:D.boards,
-      sentiment:D.sentiment,
+      jqkComps:D.jqkComps,
       mainflow:D.mainflow,
-      usSectors:D.usSectors
+      usSectors:D.usSectors,
+      jqk:D.jqk
     }));
   }catch(e){}
 }
@@ -361,14 +375,75 @@ function loadCache(){
     if(c.turnover)D.turnover=c.turnover;
     if(c.indVal&&c.indVal.date)D.indVal=c.indVal;
     if(c.boards&&c.boards.list&&c.boards.list.length)D.boards=c.boards;
-    if(c.sentiment&&typeof c.sentiment.value==='number')D.sentiment=c.sentiment;
     if(c.mainflow&&typeof c.mainflow.main==='number')D.mainflow=c.mainflow;
     if(c.usSectors&&c.usSectors.list&&c.usSectors.list.length)D.usSectors=c.usSectors;
+    if(c.jqk&&typeof c.jqk.value==='number')D.jqk=c.jqk;
+    if(c.jqkComps&&Array.isArray(c.jqkComps))D.jqkComps=c.jqkComps;
     D.sectorTag=c.sectorTag||null;
     LIVE.cacheTs=new Date(c.ts);
-    computeSentiment();
     return true;
   }catch(e){return false;}
+}
+/* 韭圈儿恐贪指数 + 6 大成分指标 —— 数据来源链（三级兜底，逐级自动降级）：
+ *   1) JQK_WORKER_URL —— Cloudflare Worker 实时拉取（服务端做 fadrefa 签名 + AES 解密，token 只留服务端）
+ *   2) JQK_RAW_URL    —— GitHub 仓库里的 jqk.json，由 GitHub Actions 每天 21:00 更新；
+ *                        raw.githubusercontent.com 带 ACAO:*，浏览器可直接跨域读取
+ *   3) 同目录 jqk.json —— 本地文件兜底（fetch_jqk_signed.js 手动跑写入）
+ * 三者都不可用时，用户仍可手动点「韭圈儿恐贪指数」卡片填入主指数。
+ * 浏览器侧调度：填了任一远端地址后，每天 21:00 自动拉一次（scheduleJqkDaily），页面长期开着也会跨日刷新。 */
+const JQK_WORKER_URL=''; // 例：'https://jqk.xxx.workers.dev/jqk'
+const JQK_RAW_URL='https://raw.githubusercontent.com/xuyang203/jqk-fear-greed/main/jqk.json';
+// ↑ 对应 GitHub 仓库 xuyang203/jqk-fear-greed；仓库名若改了这里要同步改
+const hasJqkRemote=()=>!!JQK_WORKER_URL||(!!JQK_RAW_URL&&JQK_RAW_URL.indexOf('YOUR_USERNAME')<0);
+function applyJqk(o){
+  if(!o)return false;
+  // 新结构 {main:{value,status,date}, components:[...]}
+  if(o.main&&typeof o.main.value==='number'&&o.main.value>=0&&o.main.value<=100){
+    D.jqk={value:o.main.value, date:(o.main.date||(o.updatedAt?o.updatedAt.slice(0,10):todayMD())), status:o.main.status||null};
+    if(Array.isArray(o.components))D.jqkComps=o.components;
+    return true;
+  }
+  // 旧结构（兼容） {value,status,date}
+  if(typeof o.value==='number'&&o.value>=0&&o.value<=100){
+    D.jqk={value:o.value, date:(o.date||(o.updatedAt?o.updatedAt.slice(0,10):todayMD())), status:o.status||null};
+    return true;
+  }
+  return false;
+}
+async function loadJqk(){
+  if(JQK_WORKER_URL){
+    try{
+      const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),9000);
+      const r=await fetch(JQK_WORKER_URL,{cache:'no-store',signal:ctl.signal});
+      clearTimeout(to);
+      if(r.ok&&applyJqk(await r.json())){ if(typeof renderDash==='function')renderDash(); return; }
+    }catch(e){/* 降级到下一级 */}
+  }
+  if(JQK_RAW_URL&&JQK_RAW_URL.indexOf('YOUR_USERNAME')<0){
+    try{
+      const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),9000);
+      // raw.githubusercontent.com 有约 5 分钟 CDN 缓存，用时间戳参数破缓存
+      const r=await fetch(JQK_RAW_URL+'?t='+Date.now(),{cache:'no-store',signal:ctl.signal});
+      clearTimeout(to);
+      if(r.ok&&applyJqk(await r.json())){ if(typeof renderDash==='function')renderDash(); return; }
+    }catch(e){/* 降级到下一级 */}
+  }
+  // 兜底：读本地 jqk.json
+  try{
+    const r=await fetch('jqk.json',{cache:'no-store'});
+    if(!r.ok)return;
+    if(applyJqk(await r.json())){ if(typeof renderDash==='function')renderDash(); }
+  }catch(e){}
+}
+
+/* 韭圈儿每日定时刷新：每天 21:00 浏览器侧拉一次（纯前端，不依赖 WorkBuddy）。
+ * 需先填 JQK_WORKER_URL 或 JQK_RAW_URL 之一才生效；两者都空则 loadJqk 只退化读本地 jqk.json。
+ * 页面开着跨越 21:00 即自动刷新；关页面则靠下次打开 init 的 loadJqk 取最新。 */
+function scheduleJqkDaily(){
+  if(!hasJqkRemote())return;
+  const at=()=>{ const n=new Date(), t=new Date(); t.setHours(21,0,0,0); if(t<=n)t.setDate(t.getDate()+1); return t-n; };
+  const fire=()=>{ loadJqk(); setTimeout(fire, 24*3600*1000); };
+  setTimeout(fire, at());
 }
 
 async function jget(url,timeout=9000){
@@ -574,10 +649,16 @@ async function fetchMainFlow(){
   try{
     const fields='f12,f14,f62,f66,f72,f78,f184';
     const mk=pn=>`/api/qt/clist/get?pn=${pn}&pz=100&po=1&np=1&fltt=2&invt=2&fid=f62&fs=m%3A90%2Bt%3A2&fields=${fields}`;
-    const js=await Promise.all([1,2,3,4,5].map(pn=>emget(mk(pn))));
     let main=0,xl=0,big=0,sm=0,cnt=0;
-    js.forEach(j=>{((j.data&&j.data.diff)||[]).forEach(x=>{main+=(x.f62||0);xl+=(x.f66||0);big+=(x.f72||0);sm+=(x.f78||0);cnt++;});});
-    if(!cnt)return false;
+    /* 逐页拉取、单页失败跳过其余页：避免 Promise.all 一页失败整次作废，
+     * 导致卡片永久卡在上一次成功的旧日期（此前主力资金流不更新到当日的根因） */
+    for(const pn of [1,2,3,4,5]){
+      try{
+        const j=await emget(mk(pn));
+        ((j.data&&j.data.diff)||[]).forEach(x=>{main+=(x.f62||0);xl+=(x.f66||0);big+=(x.f72||0);sm+=(x.f78||0);cnt++;});
+      }catch(e){/* 该页失败，继续累计其它页 */}
+    }
+    if(!cnt)return false;  // 仅当 5 页全部失败时判失败
     const d=new Date();const ds=`${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     D.mainflow={main:+(main/1e8).toFixed(1),xl:+(xl/1e8).toFixed(1),big:+(big/1e8).toFixed(1),sm:+(sm/1e8).toFixed(1),date:ds};
     return true;
@@ -644,54 +725,6 @@ async function fetchMargin(){
   return false;
 }
 
-/* A股情绪指数（0-100）：纯前端合成，零新增网络请求。
- * 用页面已接好的可直连 A 股源，按韭圈儿「多维度加权」思路合成为一个 0-100 分：
- *   涨跌宽度 30% · 涨停效应 25% · 期指情绪 20% · 换手热度 15% · 杠杆情绪 10%
- * 任一维度缺数据则自动剔除并归一化权重；全部缺失时 D.sentiment=null（卡片显示「等待数据」）。 */
-const clamp100=v=>Math.max(0,Math.min(100,v));
-function computeSentiment(){
-  const parts=[];
-  // 1) 涨跌宽度：上涨家数占（上涨+下跌）比
-  if(D.breadth&&(D.breadth.up+D.breadth.down)>50){
-    const r=D.breadth.up/(D.breadth.up+D.breadth.down);
-    parts.push({key:'breadth',name:'涨跌宽度',score:clamp100(r*100),
-      detail:`上涨 ${fmtNum(D.breadth.up)} / 下跌 ${fmtNum(D.breadth.down)}（占比 ${(r*100).toFixed(0)}%）`});
-  }
-  // 2) 涨停效应：涨停-跌停净额（炸板作为附注）
-  if(D.limitPool&&((D.limitPool.zt||0)+(D.limitPool.dt||0)>0)){
-    const zt=D.limitPool.zt||0,dt=D.limitPool.dt||0,net=zt-dt;
-    parts.push({key:'limit',name:'涨停效应',score:clamp100(50+net*0.6),
-      detail:`涨停 ${zt} / 跌停 ${dt} / 炸板 ${D.limitPool.zb||0}（净额 ${net>=0?'+':''}${net}）`});
-  }
-  // 3) 期指情绪：IF/IH/IC/IM 主力合约平均涨跌幅
-  if(D.futuresQuote&&D.futuresQuote.list&&D.futuresQuote.list.length){
-    const list=D.futuresQuote.list;
-    const avg=list.reduce((a,b)=>a+(b.chg||0),0)/list.length;
-    parts.push({key:'futures',name:'期指情绪',score:clamp100(50+avg*5),
-      detail:`${list.map(x=>x.code).join('/')} 主力平均 ${avg>=0?'+':''}${avg.toFixed(2)}%`});
-  }
-  // 4) 换手热度：沪+深+创业板换手率均值
-  if(D.turnover){
-    const vals=[D.turnover.sh,D.turnover.sz,D.turnover.cyb].filter(v=>typeof v==='number');
-    if(vals.length){
-      const turn=vals.reduce((a,b)=>a+b,0)/vals.length;
-      parts.push({key:'turnover',name:'换手热度',score:clamp100(30+(turn-1)*38),
-        detail:`全市场换手率均值 ${turn.toFixed(2)}%`});
-    }
-  }
-  // 5) 杠杆情绪：融资余额日变化（亿元）
-  if(D.margin&&typeof D.margin.rzChg==='number'){
-    parts.push({key:'margin',name:'杠杆情绪',score:clamp100(50+D.margin.rzChg*0.4),
-      detail:`融资余额 ${D.margin.rzChg>=0?'+':''}${D.margin.rzChg.toFixed(0)} 亿（${D.margin.date||''}）`});
-  }
-  if(!parts.length){D.sentiment=null;return;}
-  const W={breadth:0.30,limit:0.25,futures:0.20,turnover:0.15,margin:0.10};
-  const tw=Math.max(1e-6,parts.reduce((a,p)=>a+(W[p.key]||0),0));
-  const value=Math.round(parts.reduce((a,p)=>a+p.score*(W[p.key]||0),0)/tw);
-  D.sentiment={value, prev:(D.sentiment&&typeof D.sentiment.value==='number')?D.sentiment.value:null,
-    parts, ts:new Date()};
-}
-
 /* 总调度：并行拉取，单源失败不影响其他源。
  * force=true 时强制重拉全部（手动刷新按钮）。
  * 分两类：
@@ -702,6 +735,12 @@ const DAILY_TTL=6*3600*1000;
 const DAILY_SRC={margin:fetchMargin, indVal:fetchIndVal, usSectors:fetchUsSectors};
 const REALTIME_SRC=[['indices',fetchIndices],['sectors',fetchSectors],['breadth',fetchBreadth],
                     ['futures',fetchFutures],['boards',fetchBoards]];
+/* 单源硬性超时兜底：即便某源的 fetch 在网络半开/反代环境下迟迟不 resolve、abort 也未触发，
+ * 也保证该 job 在 JOB_TIMEOUT 内 settle，绝不让 Promise.all 永久阻塞（否则 spinner 永远转、徽标卡在「连接中」） */
+const JOB_TIMEOUT=18000;
+function withTimeout(p,ms){
+  return Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error('job timeout')),ms))]);
+}
 async function loadLive(force){
   if(LIVE.busy)return;
   LIVE.busy=true;
@@ -712,14 +751,15 @@ async function loadLive(force){
   Object.keys(DAILY_SRC).forEach(k=>{
     if(force||!LIVE.ttl[k]||Date.now()-LIVE.ttl[k]>DAILY_TTL)jobs.push([k,DAILY_SRC[k]]);
   });
-  await Promise.all(jobs.map(async([k,fn])=>{
-    try{const ok=await fn();LIVE.sources[k]=ok;if(ok)LIVE.ttl[k]=Date.now();}
-    catch(e){LIVE.sources[k]=false;}
-  }));
+  try{
+    await Promise.all(jobs.map(async([k,fn])=>{
+      try{const ok=await withTimeout(fn(),JOB_TIMEOUT);LIVE.sources[k]=ok;if(ok)LIVE.ttl[k]=Date.now();}
+      catch(e){LIVE.sources[k]=false;}
+    }));
+  }catch(e){}
   LIVE.ts=new Date();
   LIVE.busy=false;
   $('#refresh').classList.remove('spin');
-  computeSentiment();
   if(Object.values(LIVE.sources).some(Boolean))saveCache();
   updateLiveBadge();
   renderDash();
@@ -749,12 +789,8 @@ const CATS=[
   {id:'global',name:'美股隔夜'}
 ];
 const REG=[
-  {id:'fg_composite',cat:'sentiment',name:'A股情绪指数',desc:'涨跌家数/涨停跌停/期指/换手率/两融 实时合成 0-100',on:true,layout:'wide'},
-  {id:'sent_breadth',cat:'sentiment',name:'涨跌宽度',desc:'上涨家数占比（核心宽度）',on:true,layout:'grid'},
-  {id:'sent_limit',cat:'sentiment',name:'涨停效应',desc:'涨停-跌停净额',on:true,layout:'grid'},
-  {id:'sent_futures',cat:'sentiment',name:'期指情绪',desc:'IF/IH/IC/IM 主力平均涨跌幅',on:true,layout:'grid'},
-  {id:'sent_turnover',cat:'sentiment',name:'换手热度',desc:'全市场换手率均值',on:true,layout:'grid'},
-  {id:'sent_margin',cat:'sentiment',name:'杠杆情绪',desc:'融资余额日变化',on:true,layout:'grid'},
+  {id:'fg_composite',cat:'sentiment',name:'韭圈儿恐贪指数',desc:'韭圈儿官方大盘恐贪指数 0-100（替代原自算 A股情绪指数）',on:true,layout:'wide'},
+  {id:'jqk_comps',cat:'sentiment',name:'韭圈儿成分指标',desc:'北上资金/股价强度/指数波动/升贴水率/避险天堂/杠杆水平',on:true,layout:'wide'},
   {id:'indices',cat:'indices',name:'大盘指数',desc:'上证/深证/创业板/恒指/标普/纳指',on:true},
   {id:'mainflow',cat:'flow',name:'主力资金流',desc:'全市场主力净流入(近似万得全A)',on:true},
   {id:'margin',cat:'flow',name:'融资融券余额',desc:'两市融资余额与融券余额(亿元)',on:false},
@@ -802,43 +838,57 @@ function cardHeader(title,tag,delta){
 function fmtNum(n){return n.toLocaleString('zh-CN',{maximumFractionDigits:2});}
 
 function rFGComposite(){
-  const s=D.sentiment;
-  if(!s)return `<div class="card">
-    ${cardHeader('A股情绪指数','实时合成·5维')}
-    <div class="fg"><div class="info" style="width:100%;text-align:center;padding:20px 0">
-      <div class="lab" style="color:var(--dim)">等待实时数据…</div>
-      <div class="prev">由 涨跌家数·涨停跌停·期指·换手率·两融 实时合成</div>
+  const j=D.jqk;
+  if(!j||typeof j.value!=='number')return `<div class="card">
+    ${cardHeader('韭圈儿恐贪指数','官方·0-100')}
+    <div class="fg"><div class="info" style="width:100%;text-align:center;padding:22px 0">
+      <div class="lab" style="color:var(--dim)">韭圈儿官方值未载入</div>
+      <div class="prev">每日21:00自动拉取（GitHub）/ 本地 jqk.json / 点击手动填入</div>
+      <div class="prev jqk" onclick="__editJqk()" title="手动填入韭圈儿今日恐贪指数（0-100）">点击填入恐贪指数</div>
     </div></div></div>`;
-  const v=s.value;const chg=s.prev!=null?v-s.prev:0;
+  const v=j.value;
   return `<div class="card">
-    ${cardHeader('A股情绪指数','实时合成·5维',s.prev!=null?`<span class="${upDown(chg)}">${chg>=0?'▲':'▼'} ${Math.abs(chg)}</span>`:'')}
+    ${cardHeader('韭圈儿恐贪指数','官方·0-100', j.date?`<span class="dim" style="font-size:11px;color:var(--dim)">${j.date}</span>`:'')}
     <div class="fg">
       ${gaugeSVG(v,90,92,66,13,180,104)}
       <div class="info">
         <div class="val" style="color:${fgColor(v)}">${v}</div>
         <div class="lab" style="color:${fgColor(v)}">${fgLabel(v)}</div>
-        <div class="prev">0–100 · 5 维加权合成（韭圈儿思路·纯前端）</div>
+        <div class="prev">韭圈儿官方恐贪指数（替代原自算 A股情绪指数）</div>
+        <div class="prev jqk" onclick="__editJqk()" title="手动填入韭圈儿今日恐贪指数（0-100）">手动更新 <span class="jqkedit">点击填入</span></div>
       </div>
     </div></div>`;
 }
-function fgScore(v){return `<span class="ms" style="color:${fgColor(v)}">${v}<small>${fgLabel(v)}</small></span>`;}
-function rSentPart(key){
-  const s=D.sentiment;
-  if(!s)return `<div class="card mini-g"><div class="mg-top"><span class="mn">—</span></div><div class="mg-cap" style="color:var(--dim)">等待数据</div></div>`;
-  const p=s.parts.find(x=>x.key===key);
-  if(!p)return `<div class="card mini-g"><div class="mg-top"><span class="mn">${key}</span></div><div class="mg-cap" style="color:var(--dim)">暂无该维度</div></div>`;
-  const v=p.score;const w=Math.min(48,Math.abs(v-50)/50*50);
-  return `<div class="card mini-g">
-    <div class="mg-top"><span class="mn">${p.name}</span>${fgScore(Math.round(v))}</div>
-    <div class="mg-viz"><div class="m-center"><div class="m-center-mid"></div><div class="m-center-fill" style="${v>=50?`left:50%;width:${w.toFixed(0)}%`:`right:50%;width:${w.toFixed(0)}%`};background:${v>=50?'var(--greed)':'var(--fear)'}"></div></div></div>
-    <div class="mg-cap">${p.detail}</div>
+/* 韭圈儿恐贪指数：由 loadJqk() 从 Worker / 本地 jqk.json 自动载入；token 留服务端，浏览器纯前端刷新 */
+window.__editJqk=function(){
+  const cur=D.jqk?String(D.jqk.value):'';
+  const inp=prompt('填入韭圈儿今日恐贪指数（0-100），留空清除：',cur);
+  if(inp===null)return;
+  const t=inp.trim();
+  if(t===''){D.jqk=null;}
+  else{const v=parseFloat(t); if(isNaN(v)){alert('请输入数字');return;} D.jqk={value:Math.max(0,Math.min(100,Math.round(v*10)/10)),date:todayMD()};}
+  try{saveCache();}catch(e){}
+  if(typeof renderDash==='function')renderDash();
+};
+/* 韭圈儿 6 大成分指标（北上资金/股价强度/指数波动/升贴水率/避险天堂/杠杆水平）—— 工作台情绪指标 */
+function rJqkComps(){
+  const cs=D.jqkComps;
+  if(!cs||!cs.length)return `<div class="card">
+    ${cardHeader('韭圈儿成分指标','恐贪指数构成')}
+    <div class="prev" style="color:var(--dim);padding:16px 4px">成分指标未载入（远端与本地 jqk.json 均不可达）</div></div>`;
+  const fmt=v=>(typeof v==='number')?(Math.abs(v)>=1000?fmtNum(v):v.toFixed(2)):'-';
+  return `<div class="card">
+    ${cardHeader('韭圈儿成分指标','恐贪指数构成')}
+    <div class="jqk-comps">
+      ${cs.map(c=>`<div class="jqk-comp">
+        <div class="c-name">${c.name||''}</div>
+        <div class="c-val">${fmt(c.value)}<small>${c.unit||''}</small></div>
+        <div class="c-status" style="color:${c.color||'var(--dim)'}">${c.status||'-'}</div>
+      </div>`).join('')}
+    </div>
+    <div class="prev" style="color:var(--dim);margin-top:8px">韭圈儿 6 大成分 · 北上资金 / 股价强度 / 指数波动 / 升贴水率 / 避险天堂 / 杠杆水平</div>
   </div>`;
 }
-function rSentBreadth(){return rSentPart('breadth');}
-function rSentLimit(){return rSentPart('limit');}
-function rSentFutures(){return rSentPart('futures');}
-function rSentTurnover(){return rSentPart('turnover');}
-function rSentMargin(){return rSentPart('margin');}
 
 function rIndices(){
   return `<div class="card">
@@ -1049,7 +1099,7 @@ function rSectors(){
 
 const RENDER={
   fg_composite:rFGComposite,
-  sent_breadth:rSentBreadth,sent_limit:rSentLimit,sent_futures:rSentFutures,sent_turnover:rSentTurnover,sent_margin:rSentMargin,
+  jqk_comps:rJqkComps,
   indices:rIndices,mainflow:rMainFlow,margin:rMargin,futures:rFutures,breadth:rBreadth,valuation:rValuation,sectors:rSectors,
   limitPool:rLimitPool,indVal:rIndVal,boards:rBoards,us_sectors:rUsSectors
 };
@@ -1121,12 +1171,15 @@ $('#refresh').addEventListener('click',()=>loadLive(true));
  * 这样首屏不会是空白/硬编码旧值，断网时也能看到「上次成功的数据 + 时间标签」。 */
 loadCache();
 renderDash();renderSettings();
+loadJqk();
+scheduleJqkDaily(); // 每天21:00浏览器侧定时刷新（纯前端，不依赖 WorkBuddy；未填远端地址则内部直接 return）
 loadLive();
 
 /* 数据更新策略：按是否开盘分两档 ——
  *   交易时段（周一至周五 9:30-11:30 / 13:00-15:00）：每 60 秒一轮，跟住盘中变化
  *   非交易时段（盘前/盘后/午休/周末）：降到 30 分钟一轮，避免无意义请求
  *   页面切到后台时不轮询；切回前台立即按当前档位判断是否补拉。手动点刷新始终可用。
+ *   韭圈儿恐贪指数/6成分：独立调度，填了远端地址后每天 21:00 拉一次（scheduleJqkDaily），不随上面轮询。
  * 说明：只判断星期与时刻，不判断法定节假日 —— 节假日多发的几轮请求对接口无压力
  *（实测单次 12ms、连续 10 次无限流），换来的是不用维护节假日表。 */
 const POLL_SESSION=60*1000, POLL_IDLE=30*60*1000, TICK_MS=15000;

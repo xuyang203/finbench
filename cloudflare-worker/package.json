@@ -1,0 +1,13 @@
+{
+  "name": "jqk-worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "worker.js",
+  "dependencies": {
+    "crypto-js": "^4.2.0"
+  },
+  "devDependencies": {
+    "wrangler": "^3.78.0"
+  }
+}

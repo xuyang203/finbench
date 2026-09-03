@@ -1,6 +1,12 @@
 # WorkBuddy 项目内部数据，不要纳入版本库
 .workbuddy/
 
+# 依赖（含 cloudflare-worker 的 node_modules，巨量且可重装）
+node_modules/
+
+# 已独立成库 xuyang203/jqk-fear-greed，避免重复同步
+jqk-updater/
+
 # 系统文件
 .DS_Store
 *.swp
