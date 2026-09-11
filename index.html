@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#0a0e17">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="金融工作台">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon.svg">
+<html lang="zh-CN" data-page-node-id="7M9dAfIFFPZug6xRFhcPJf">
+<head data-page-node-id="uEzZLZN5vyIVWoDEEfZteV">
+<meta charset="UTF-8" data-page-node-id="F56yeEsPIxBKYVOen3N9Hq">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" data-page-node-id="NGn2n2f8UQAapGL8v14stN">
+<meta name="theme-color" content="#0a0e17" data-page-node-id="3NvZX7AzY8FHWKNcukqvbQ">
+<meta name="apple-mobile-web-app-capable" content="yes" data-page-node-id="NaEBBYrQGcuYcbs4kqlOhI">
+<meta name="mobile-web-app-capable" content="yes" data-page-node-id="SqjqFDJuwTC8fLS2mExDjy">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" data-page-node-id="8AGyBQTKWI5fSBlkqn5aET">
+<meta name="apple-mobile-web-app-title" content="金融工作台" data-page-node-id="mcfcimX1zW7iSUakesVdKR">
+<link rel="manifest" href="manifest.json" data-page-node-id="yphedAsXNm03XwJXMPTIyZ">
+<link rel="icon" href="icon.svg" type="image/svg+xml" data-page-node-id="WFX4QtTzFACQXvm7mZIhzi">
+<link rel="apple-touch-icon" href="icon.svg" data-page-node-id="VcoRQocNcG0KBw6su241ET">
 <title>金融工作台 · iPhone Workbench</title>
 <style>
 :root{
@@ -121,6 +121,11 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .heat .cell{border-radius:10px;padding:9px 8px;border:1px solid var(--border)}
 .heat .cell .n{font-size:11px}
 .heat .cell .c{font-size:14px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+/* 美股隔夜行业卡：每行列 5 个、格子略小 */
+.heat.tight{gap:5px}
+.heat.tight .cell{padding:7px 5px;border-radius:8px}
+.heat.tight .cell .n{font-size:10px}
+.heat.tight .cell .c{font-size:12px;margin-top:1px}
 /* sector cell with PE percentile */
 .sec-cell{padding:8px 7px}
 .sec-cell .sct{display:flex;justify-content:space-between;align-items:baseline;gap:4px}
@@ -216,48 +221,48 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .note{font-size:11px;color:var(--faint);line-height:1.6;margin-top:4px}
 </style>
 </head>
-<body>
-<div class="stage">
-  <div class="device">
-    <div class="app">
+<body data-page-node-id="wG5hVwRiURYngD1OSDmY40">
+<div class="stage" data-page-node-id="GlRY4OVY86OP08jPAU3QuL">
+  <div class="device" data-page-node-id="yp1NQs33lrAkWXnQ2c6oAi">
+    <div class="app" data-page-node-id="iL2LO5UFs0wfDrcYiWjF8m">
       <!-- DASHBOARD -->
-      <section class="view" id="view-dash">
-        <div class="hdr">
-          <div>
-            <div class="title">金融工作台</div>
-            <div class="sub" id="today"></div>
+      <section class="view" id="view-dash" data-page-node-id="wHUQvRMW62hqt8zPBKA8Cg">
+        <div class="hdr" data-page-node-id="BLSyGtFZVvMLewRsSddLDe">
+          <div data-page-node-id="4PsG2uaUZePsF0ObiB5l04">
+            <div class="title" data-page-node-id="aKoKnVuCrlxMe1RPfWEvy7">金融工作台</div>
+            <div class="sub" id="today" data-page-node-id="l7FOtS34JyJQbbcl0ZJW5M"></div>
           </div>
-          <div class="actions">
-            <span class="pill" id="livebadge" style="color:var(--dim)"><span class="dot" style="background:var(--dim)"></span>连接中</span>
-            <button class="iconbtn" id="refresh" title="刷新">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+          <div class="actions" data-page-node-id="eBwMKjJd5M9VBH7QOgl9gT">
+            <span class="pill" id="livebadge" style="color:var(--dim)" data-page-node-id="P3GIRWp0ljIAbbsd2EaYaY"><span class="dot" style="background:var(--dim)" data-page-node-id="d5IszhnENVcMNPzcRMJ0HX"></span>连接中</span>
+            <button class="iconbtn" id="refresh" title="刷新" data-page-node-id="B87jNVTDItMZhoUM9i7r4S">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="HrqAKvvOxzLALJcGfZjYp6"><path d="M21 12a9 9 0 1 1-2.64-6.36" data-page-node-id="tkKyMFlDkEEyTQhBeu53wY"/><path d="M21 3v6h-6" data-page-node-id="F7cII3Lsn3ySUwypUbZAel"/></svg>
             </button>
           </div>
         </div>
-        <div id="cards"></div>
-        <div class="note">盘中实时（浏览器直连公开行情接口）：指数 · 申万行业 · 涨跌家数 · 换手率 · 股指期货 · 涨跌停家数 · 细分板块 · A股情绪指数（5维实时合成） —— 交易时段每 60 秒自动刷新，其余时间 30 分钟一轮，切到后台暂停<br>日频（6 小时拉一次）：融资融券 · 行业估值 PE/PB<br>静态参考：北向净流入（已停止实时披露）· PE分位（源达 8/21）· 期指前20席位（中金所无CORS，取不到）</div>
+        <div id="cards" data-page-node-id="s7ashDE6DmGzAwbs7NPLuZ"></div>
+        <div class="note" data-page-node-id="GQG8WI965F1KHmQBwjWkcl">盘中实时（浏览器直连公开行情接口）：指数 · 申万行业 · 涨跌家数 · 换手率 · 股指期货 · 涨跌停家数 · 细分板块 · A股情绪指数（5维实时合成） —— 交易时段每 60 秒自动刷新，其余时间 30 分钟一轮，切到后台暂停<br data-page-node-id="9N93AYlNBi08DYDDcqvMQl">日频（6 小时拉一次）：融资融券 · 行业估值 PE/PB<br data-page-node-id="06A2OogBxFTAkXMlGBoPLO">静态参考：北向净流入（已停止实时披露）· PE分位（源达 8/21）· 期指前20席位（中金所无CORS，取不到）</div>
       </section>
 
       <!-- SETTINGS -->
-      <section class="view" id="view-set" hidden>
-        <div class="hdr">
-          <div>
-            <div class="title">指标设置</div>
-            <div class="sub">选择首页展示的指标，设置即时生效</div>
+      <section class="view" id="view-set" hidden data-page-node-id="NtCO8MGXyWTSgBRkwidFlK">
+        <div class="hdr" data-page-node-id="KLrCrUUl9ggHExZFw3WhI2">
+          <div data-page-node-id="SBYnS0PQDxDxmMsu8s6IM3">
+            <div class="title" data-page-node-id="O0n5PvW9MxbG84evUJUgUS">指标设置</div>
+            <div class="sub" data-page-node-id="tV1ZzTaMcwqKh53tGLy3k2">选择首页展示的指标，设置即时生效</div>
           </div>
         </div>
-        <div id="settings"></div>
-        <div class="set-foot">已启用 <b id="cnt">0</b> / <b id="tot">0</b> 项指标 · 设置已保存到本机</div>
+        <div id="settings" data-page-node-id="VfyxiWxbpWJQtcRXzer9zg"></div>
+        <div class="set-foot" data-page-node-id="vAURQ7Wdu28EoZuthU0qeN">已启用 <b id="cnt" data-page-node-id="XLyNLfqO1XVUXRJqWLUHPA">0</b> / <b id="tot" data-page-node-id="XfAQ2oYvnCk9yUdQwADqHt">0</b> 项指标 · 设置已保存到本机</div>
       </section>
 
       <!-- tabbar -->
-      <nav class="tabbar">
-        <button data-tab="dash" class="on">
-          <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></span>
+      <nav class="tabbar" data-page-node-id="GSV674LfcfRI7H1KlT7tkS">
+        <button data-tab="dash" class="on" data-page-node-id="gTpqrpP1BVvB860R6WGPnf">
+          <span class="ic" data-page-node-id="YMTzdjTlLOXHFCWebL77Un"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="5AhHcJytD8QQ4O2sb2vtGO"><rect x="3" y="3" width="7" height="9" rx="1" data-page-node-id="Xtch4ZIVWZXyTRwZHMpdBH"/><rect x="14" y="3" width="7" height="5" rx="1" data-page-node-id="HCeWpG5P0BkeAqvk20PhbO"/><rect x="14" y="12" width="7" height="9" rx="1" data-page-node-id="qzatDWF05H3FH6aeJ9gV1u"/><rect x="3" y="16" width="7" height="5" rx="1" data-page-node-id="0CUWWOHUveFPzJ4PUa9r1a"/></svg></span>
           仪表盘
         </button>
-        <button data-tab="set">
-          <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.2 3h-.4a2 2 0 0 0-2 1.7l-.5 2.6a6 6 0 0 0-1.5.9l-2.5-1a2 2 0 0 0-2.5.9l-.2.3a2 2 0 0 0 .5 2.5l1.9 1.6a6 6 0 0 0 0 1.8l-1.9 1.6a2 2 0 0 0-.5 2.5l.2.3a2 2 0 0 0 2.5.9l2.5-1a6 6 0 0 0 1.5.9l.5 2.6a2 2 0 0 0 2 1.7h.4a2 2 0 0 0 2-1.7l.5-2.6a6 6 0 0 0 1.5-.9l2.5 1a2 2 0 0 0 2.5-.9l.2-.3a2 2 0 0 0-.5-2.5l-1.9-1.6a6 6 0 0 0 0-1.8l1.9-1.6a2 2 0 0 0 .5-2.5l-.2-.3a2 2 0 0 0-2.5-.9l-2.5 1a6 6 0 0 0-1.5-.9l-.5-2.6A2 2 0 0 0 12.2 3Z"/><circle cx="12" cy="12" r="3"/></svg></span>
+        <button data-tab="set" data-page-node-id="sl30UdiY9rmiNwO2CjV71m">
+          <span class="ic" data-page-node-id="Jz1Z643DcSmf1nHEv50S0B"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="yjNR4mKJhYUkzR3ZAtOoqp"><path d="M12.2 3h-.4a2 2 0 0 0-2 1.7l-.5 2.6a6 6 0 0 0-1.5.9l-2.5-1a2 2 0 0 0-2.5.9l-.2.3a2 2 0 0 0 .5 2.5l1.9 1.6a6 6 0 0 0 0 1.8l-1.9 1.6a2 2 0 0 0-.5 2.5l.2.3a2 2 0 0 0 2.5.9l2.5-1a6 6 0 0 0 1.5.9l.5 2.6a2 2 0 0 0 2 1.7h.4a2 2 0 0 0 2-1.7l.5-2.6a6 6 0 0 0 1.5-.9l2.5 1a2 2 0 0 0 2.5-.9l.2-.3a2 2 0 0 0-.5-2.5l-1.9-1.6a6 6 0 0 0 0-1.8l1.9-1.6a2 2 0 0 0 .5-2.5l-.2-.3a2 2 0 0 0-2.5-.9l-2.5 1a6 6 0 0 0-1.5-.9l-.5-2.6A2 2 0 0 0 12.2 3Z" data-page-node-id="cUr7TUisinH0ZIDYwpfiLY"/><circle cx="12" cy="12" r="3" data-page-node-id="M7aAxxt69V8l87hZWFGUsV"/></svg></span>
           指标设置
         </button>
       </nav>
@@ -287,6 +292,7 @@ const D = {
   ],
   mainflow:{ main:null, xl:null, big:null, sm:null, date:null },  // 全市场主力资金流(板块汇总, 近似万得全A), 实时计算
   usSectors:null,        // 美股隔夜板块行情(标普11板块SPDR ETF) → {list:[{code,name,chg,px,amt}]}
+  usIndustries:null,     // 美股隔夜 GICS 行业(标普500成分股等权聚合) → {date,sectors:[{sec,n,chg}],industries:[{sec,ind,n,chg}]}
   margin:{ rz:26333.15, rzChg:-62.07, rq:270.54, rqChg:2.20 }, // 2026-08-21
   futures:[  // 前20席位持仓：中金所 XML 无 CORS 且为 XML 格式，纯前端取不到，保留结构占位
     {code:'IF',name:'沪深300',long:null,short:null},
@@ -355,6 +361,7 @@ function saveCache(){
       jqkComps:D.jqkComps,
       mainflow:D.mainflow,
       usSectors:D.usSectors,
+      usIndustries:D.usIndustries,
       jqk:D.jqk
     }));
   }catch(e){}
@@ -377,6 +384,7 @@ function loadCache(){
     if(c.boards&&c.boards.list&&c.boards.list.length)D.boards=c.boards;
     if(c.mainflow&&typeof c.mainflow.main==='number')D.mainflow=c.mainflow;
     if(c.usSectors&&c.usSectors.list&&c.usSectors.list.length)D.usSectors=c.usSectors;
+    if(c.usIndustries&&Array.isArray(c.usIndustries.industries)&&c.usIndustries.industries.length)D.usIndustries=c.usIndustries;
     if(c.jqk&&typeof c.jqk.value==='number')D.jqk=c.jqk;
     if(c.jqkComps&&Array.isArray(c.jqkComps))D.jqkComps=c.jqkComps;
     D.sectorTag=c.sectorTag||null;
@@ -445,6 +453,599 @@ function scheduleJqkDaily(){
   const fire=()=>{ loadJqk(); setTimeout(fire, 24*3600*1000); };
   setTimeout(fire, at());
 }
+
+/* 美股隔夜行业(GICS) —— 纯前端实时聚合（不再依赖 GitHub Actions / 定时任务）
+ * 成分股→GICS行业映射 SP500_GICS 与板块顺序 US_SEC_ORDER 已内嵌（标普500官方成分表 + 原聚合脚本 SUB2IND）；
+ * 行情实时从腾讯 qt.gtimg.cn 拉取（ACAO:*，HTTPS 可用，GBK 解码，复用 tget），浏览器内等权聚合 53 行业。
+ * 刷新：页面加载即算一次（先显本地缓存，再后台刷新）；交易时段内每 6 小时刷新（scheduleUsIndustries）。 */
+const SP500_GICS={
+"A":["生命科学工具与服务","医疗保健"],
+"AAPL":["技术硬件存储与外围设备","信息技术"],
+"ABBV":["生物科技","医疗保健"],
+"ABNB":["酒店餐饮与休闲","可选消费"],
+"ABT":["医疗设备与用品","医疗保健"],
+"ACGL":["保险","金融"],
+"ACN":["IT服务","信息技术"],
+"ADBE":["软件","信息技术"],
+"ADI":["半导体及半导体设备","信息技术"],
+"ADM":["食品","必需消费"],
+"ADP":["专业服务","工业"],
+"ADSK":["软件","信息技术"],
+"AEE":["综合公用事业","公用事业"],
+"AEP":["电力公用事业","公用事业"],
+"AES":["独立电力与可再生能源发电","公用事业"],
+"AFL":["保险","金融"],
+"AIG":["保险","金融"],
+"AIZ":["保险","金融"],
+"AJG":["保险","金融"],
+"AKAM":["IT服务","信息技术"],
+"ALB":["化工","材料"],
+"ALGN":["医疗设备与用品","医疗保健"],
+"ALL":["保险","金融"],
+"ALLE":["建筑产品","工业"],
+"AMAT":["半导体及半导体设备","信息技术"],
+"AMCR":["容器与包装","材料"],
+"AMD":["半导体及半导体设备","信息技术"],
+"AME":["电气设备","工业"],
+"AMGN":["生物科技","医疗保健"],
+"AMP":["资本市场","金融"],
+"AMT":["特种REITs","房地产"],
+"AMZN":["综合零售","可选消费"],
+"ANET":["通信设备","信息技术"],
+"AON":["保险","金融"],
+"AOS":["建筑产品","工业"],
+"APA":["石油天然气与消费燃料","能源"],
+"APD":["化工","材料"],
+"APH":["电子设备仪器与元件","信息技术"],
+"APO":["资本市场","金融"],
+"APP":["媒体","通信服务"],
+"APTV":["汽车零部件","可选消费"],
+"ARE":["办公REITs","房地产"],
+"ARES":["资本市场","金融"],
+"ATO":["燃气公用事业","公用事业"],
+"AVGO":["半导体及半导体设备","信息技术"],
+"AVY":["容器与包装","材料"],
+"AWK":["水务公用事业","公用事业"],
+"AXON":["航空航天与国防","工业"],
+"AXP":["消费金融","金融"],
+"AZO":["专业零售","可选消费"],
+"BA":["航空航天与国防","工业"],
+"BAC":["银行","金融"],
+"BALL":["容器与包装","材料"],
+"BAX":["医疗设备与用品","医疗保健"],
+"BBY":["专业零售","可选消费"],
+"BDX":["医疗设备与用品","医疗保健"],
+"BEN":["资本市场","金融"],
+"BF-B":["饮料","必需消费"],
+"BG":["食品","必需消费"],
+"BIIB":["生物科技","医疗保健"],
+"BKNG":["酒店餐饮与休闲","可选消费"],
+"BKR":["能源设备与服务","能源"],
+"BLDR":["建筑产品","工业"],
+"BLK":["资本市场","金融"],
+"BMY":["制药","医疗保健"],
+"BNY":["资本市场","金融"],
+"BR":["商业服务与用品","工业"],
+"BRK-B":["金融服务","金融"],
+"BRO":["保险","金融"],
+"BSX":["医疗设备与用品","医疗保健"],
+"BX":["资本市场","金融"],
+"BXP":["办公REITs","房地产"],
+"C":["银行","金融"],
+"CAH":["医疗服务提供商","医疗保健"],
+"CARR":["建筑产品","工业"],
+"CASY":["必需消费分销与零售","必需消费"],
+"CAT":["机械","工业"],
+"CB":["保险","金融"],
+"CBOE":["金融服务","金融"],
+"CBRE":["房地产管理与开发","房地产"],
+"CCI":["特种REITs","房地产"],
+"CCL":["酒店餐饮与休闲","可选消费"],
+"CDNS":["软件","信息技术"],
+"CDW":["技术硬件存储与外围设备","信息技术"],
+"CEG":["电力公用事业","公用事业"],
+"CF":["化工","材料"],
+"CFG":["银行","金融"],
+"CHD":["家庭用品","必需消费"],
+"CHRW":["航空货运与物流","工业"],
+"CHTR":["多元化电信服务","通信服务"],
+"CI":["医疗服务提供商","医疗保健"],
+"CIEN":["通信设备","信息技术"],
+"CINF":["保险","金融"],
+"CL":["家庭用品","必需消费"],
+"CLX":["家庭用品","必需消费"],
+"CMCSA":["多元化电信服务","通信服务"],
+"CME":["金融服务","金融"],
+"CMG":["酒店餐饮与休闲","可选消费"],
+"CMI":["机械","工业"],
+"CMS":["综合公用事业","公用事业"],
+"CNC":["医疗服务提供商","医疗保健"],
+"CNP":["综合公用事业","公用事业"],
+"COF":["消费金融","金融"],
+"COHR":["电子设备仪器与元件","信息技术"],
+"COIN":["金融服务","金融"],
+"COO":["医疗设备与用品","医疗保健"],
+"COP":["石油天然气与消费燃料","能源"],
+"COR":["医疗服务提供商","医疗保健"],
+"COST":["必需消费分销与零售","必需消费"],
+"CPAY":["金融服务","金融"],
+"CPRT":["商业服务与用品","工业"],
+"CPT":["住宅REITs","房地产"],
+"CRH":["建筑材料","材料"],
+"CRL":["生命科学工具与服务","医疗保健"],
+"CRM":["软件","信息技术"],
+"CRWD":["软件","信息技术"],
+"CSCO":["通信设备","信息技术"],
+"CSGP":["房地产管理与开发","房地产"],
+"CSX":["陆运","工业"],
+"CTAS":["商业服务与用品","工业"],
+"CTSH":["IT服务","信息技术"],
+"CTVA":["化工","材料"],
+"CVNA":["专业零售","可选消费"],
+"CVS":["医疗服务提供商","医疗保健"],
+"CVX":["石油天然气与消费燃料","能源"],
+"D":["综合公用事业","公用事业"],
+"DAL":["客运航空","工业"],
+"DASH":["多元化消费者服务","可选消费"],
+"DD":["工业集团","工业"],
+"DDOG":["软件","信息技术"],
+"DE":["机械","工业"],
+"DECK":["纺织品服装与奢侈品","可选消费"],
+"DELL":["技术硬件存储与外围设备","信息技术"],
+"DG":["必需消费分销与零售","必需消费"],
+"DGX":["医疗服务提供商","医疗保健"],
+"DHI":["家用耐用消费品","可选消费"],
+"DHR":["生命科学工具与服务","医疗保健"],
+"DIS":["娱乐","通信服务"],
+"DLR":["特种REITs","房地产"],
+"DLTR":["必需消费分销与零售","必需消费"],
+"DOC":["医疗REITs","房地产"],
+"DOV":["机械","工业"],
+"DOW":["化工","材料"],
+"DPZ":["酒店餐饮与休闲","可选消费"],
+"DRI":["酒店餐饮与休闲","可选消费"],
+"DTE":["综合公用事业","公用事业"],
+"DUK":["电力公用事业","公用事业"],
+"DVA":["医疗服务提供商","医疗保健"],
+"DVN":["石油天然气与消费燃料","能源"],
+"DXCM":["医疗设备与用品","医疗保健"],
+"EBAY":["综合零售","可选消费"],
+"ECHO":["无线电信服务","通信服务"],
+"ECL":["化工","材料"],
+"ED":["综合公用事业","公用事业"],
+"EFX":["专业服务","工业"],
+"EG":["保险","金融"],
+"EIX":["电力公用事业","公用事业"],
+"EL":["个人护理用品","必需消费"],
+"ELV":["医疗服务提供商","医疗保健"],
+"EME":["建筑与工程","工业"],
+"EMR":["电气设备","工业"],
+"EOG":["石油天然气与消费燃料","能源"],
+"EQIX":["特种REITs","房地产"],
+"EQT":["石油天然气与消费燃料","能源"],
+"ERIE":["保险","金融"],
+"ES":["电力公用事业","公用事业"],
+"ESS":["住宅REITs","房地产"],
+"ETN":["电气设备","工业"],
+"ETR":["电力公用事业","公用事业"],
+"EVRG":["电力公用事业","公用事业"],
+"EW":["医疗设备与用品","医疗保健"],
+"EXC":["电力公用事业","公用事业"],
+"EXE":["石油天然气与消费燃料","能源"],
+"EXPD":["航空货运与物流","工业"],
+"EXPE":["酒店餐饮与休闲","可选消费"],
+"EXR":["特种REITs","房地产"],
+"F":["汽车","可选消费"],
+"FANG":["石油天然气与消费燃料","能源"],
+"FAST":["贸易公司与经销商","工业"],
+"FCX":["金属与采矿","材料"],
+"FDS":["金融服务","金融"],
+"FDX":["航空货运与物流","工业"],
+"FDXF":["陆运","工业"],
+"FE":["电力公用事业","公用事业"],
+"FERG":["建筑产品","工业"],
+"FFIV":["通信设备","信息技术"],
+"FICO":["软件","信息技术"],
+"FIS":["金融服务","金融"],
+"FISV":["金融服务","金融"],
+"FITB":["银行","金融"],
+"FIX":["建筑与工程","工业"],
+"FLEX":["电子设备仪器与元件","信息技术"],
+"FOX":["媒体","通信服务"],
+"FOXA":["媒体","通信服务"],
+"FRT":["零售REITs","房地产"],
+"FSLR":["半导体及半导体设备","信息技术"],
+"FTNT":["软件","信息技术"],
+"FTV":["机械","工业"],
+"GD":["航空航天与国防","工业"],
+"GDDY":["IT服务","信息技术"],
+"GE":["航空航天与国防","工业"],
+"GEHC":["医疗设备与用品","医疗保健"],
+"GEN":["软件","信息技术"],
+"GEV":["电气设备","工业"],
+"GILD":["生物科技","医疗保健"],
+"GIS":["食品","必需消费"],
+"GL":["保险","金融"],
+"GLW":["电子设备仪器与元件","信息技术"],
+"GM":["汽车","可选消费"],
+"GNRC":["电气设备","工业"],
+"GOOG":["互动媒体与服务","通信服务"],
+"GOOGL":["互动媒体与服务","通信服务"],
+"GPC":["经销商","可选消费"],
+"GPN":["金融服务","金融"],
+"GRMN":["家用耐用消费品","可选消费"],
+"GS":["资本市场","金融"],
+"GWW":["机械","工业"],
+"HAL":["能源设备与服务","能源"],
+"HAS":["休闲用品","可选消费"],
+"HBAN":["银行","金融"],
+"HCA":["医疗服务提供商","医疗保健"],
+"HD":["专业零售","可选消费"],
+"HIG":["保险","金融"],
+"HII":["航空航天与国防","工业"],
+"HLT":["酒店餐饮与休闲","可选消费"],
+"HON":["工业集团","工业"],
+"HONA":["航空航天与国防","工业"],
+"HOOD":["资本市场","金融"],
+"HPE":["技术硬件存储与外围设备","信息技术"],
+"HPQ":["技术硬件存储与外围设备","信息技术"],
+"HRL":["食品","必需消费"],
+"HSIC":["医疗服务提供商","医疗保健"],
+"HST":["酒店度假REITs","房地产"],
+"HSY":["食品","必需消费"],
+"HUBB":["机械","工业"],
+"HUM":["医疗服务提供商","医疗保健"],
+"HWM":["航空航天与国防","工业"],
+"IBKR":["资本市场","金融"],
+"IBM":["IT服务","信息技术"],
+"ICE":["金融服务","金融"],
+"IDXX":["医疗设备与用品","医疗保健"],
+"IEX":["机械","工业"],
+"IFF":["化工","材料"],
+"INCY":["生物科技","医疗保健"],
+"INTC":["半导体及半导体设备","信息技术"],
+"INTU":["软件","信息技术"],
+"INVH":["住宅REITs","房地产"],
+"IP":["容器与包装","材料"],
+"IQV":["生命科学工具与服务","医疗保健"],
+"IR":["机械","工业"],
+"IRM":["特种REITs","房地产"],
+"ISRG":["医疗设备与用品","医疗保健"],
+"IT":["IT服务","信息技术"],
+"ITW":["机械","工业"],
+"IVZ":["资本市场","金融"],
+"J":["建筑与工程","工业"],
+"JBHT":["陆运","工业"],
+"JBL":["电子设备仪器与元件","信息技术"],
+"JCI":["建筑产品","工业"],
+"JKHY":["金融服务","金融"],
+"JNJ":["制药","医疗保健"],
+"JPM":["银行","金融"],
+"KDP":["饮料","必需消费"],
+"KEY":["银行","金融"],
+"KEYS":["电子设备仪器与元件","信息技术"],
+"KHC":["食品","必需消费"],
+"KIM":["零售REITs","房地产"],
+"KKR":["资本市场","金融"],
+"KLAC":["半导体及半导体设备","信息技术"],
+"KMB":["家庭用品","必需消费"],
+"KMI":["石油天然气与消费燃料","能源"],
+"KO":["饮料","必需消费"],
+"KR":["必需消费分销与零售","必需消费"],
+"KVUE":["个人护理用品","必需消费"],
+"L":["保险","金融"],
+"LDOS":["商业服务与用品","工业"],
+"LEN":["家用耐用消费品","可选消费"],
+"LH":["医疗服务提供商","医疗保健"],
+"LHX":["航空航天与国防","工业"],
+"LII":["建筑产品","工业"],
+"LIN":["化工","材料"],
+"LITE":["通信设备","信息技术"],
+"LLY":["制药","医疗保健"],
+"LMT":["航空航天与国防","工业"],
+"LNT":["电力公用事业","公用事业"],
+"LOW":["专业零售","可选消费"],
+"LRCX":["半导体及半导体设备","信息技术"],
+"LULU":["纺织品服装与奢侈品","可选消费"],
+"LUV":["客运航空","工业"],
+"LVS":["酒店餐饮与休闲","可选消费"],
+"LYB":["化工","材料"],
+"LYV":["娱乐","通信服务"],
+"MA":["金融服务","金融"],
+"MAA":["住宅REITs","房地产"],
+"MAR":["酒店餐饮与休闲","可选消费"],
+"MAS":["建筑产品","工业"],
+"MCD":["酒店餐饮与休闲","可选消费"],
+"MCHP":["半导体及半导体设备","信息技术"],
+"MCK":["医疗服务提供商","医疗保健"],
+"MCO":["金融服务","金融"],
+"MDLZ":["食品","必需消费"],
+"MDT":["医疗设备与用品","医疗保健"],
+"MET":["保险","金融"],
+"META":["互动媒体与服务","通信服务"],
+"MGM":["酒店餐饮与休闲","可选消费"],
+"MKC":["食品","必需消费"],
+"MLM":["建筑材料","材料"],
+"MMM":["工业集团","工业"],
+"MNST":["饮料","必需消费"],
+"MO":["烟草","必需消费"],
+"MOS":["化工","材料"],
+"MPC":["石油天然气与消费燃料","能源"],
+"MPWR":["半导体及半导体设备","信息技术"],
+"MRK":["制药","医疗保健"],
+"MRNA":["生物科技","医疗保健"],
+"MRSH":["保险","金融"],
+"MRVL":["半导体及半导体设备","信息技术"],
+"MS":["资本市场","金融"],
+"MSCI":["金融服务","金融"],
+"MSFT":["软件","信息技术"],
+"MSI":["通信设备","信息技术"],
+"MTB":["银行","金融"],
+"MTD":["生命科学工具与服务","医疗保健"],
+"MU":["半导体及半导体设备","信息技术"],
+"NCLH":["酒店餐饮与休闲","可选消费"],
+"NDAQ":["金融服务","金融"],
+"NDSN":["机械","工业"],
+"NEE":["综合公用事业","公用事业"],
+"NEM":["金属与采矿","材料"],
+"NFLX":["娱乐","通信服务"],
+"NI":["综合公用事业","公用事业"],
+"NKE":["纺织品服装与奢侈品","可选消费"],
+"NOC":["航空航天与国防","工业"],
+"NOW":["软件","信息技术"],
+"NRG":["独立电力与可再生能源发电","公用事业"],
+"NSC":["陆运","工业"],
+"NTAP":["技术硬件存储与外围设备","信息技术"],
+"NTRS":["资本市场","金融"],
+"NUE":["金属与采矿","材料"],
+"NVDA":["半导体及半导体设备","信息技术"],
+"NVR":["家用耐用消费品","可选消费"],
+"NWS":["媒体","通信服务"],
+"NWSA":["媒体","通信服务"],
+"NXPI":["半导体及半导体设备","信息技术"],
+"O":["零售REITs","房地产"],
+"ODFL":["陆运","工业"],
+"OKE":["石油天然气与消费燃料","能源"],
+"OMC":["媒体","通信服务"],
+"ON":["半导体及半导体设备","信息技术"],
+"ORCL":["软件","信息技术"],
+"ORLY":["专业零售","可选消费"],
+"OTIS":["机械","工业"],
+"OXY":["石油天然气与消费燃料","能源"],
+"PANW":["软件","信息技术"],
+"PAYX":["专业服务","工业"],
+"PCAR":["机械","工业"],
+"PCG":["综合公用事业","公用事业"],
+"PEG":["电力公用事业","公用事业"],
+"PEP":["饮料","必需消费"],
+"PFE":["制药","医疗保健"],
+"PFG":["保险","金融"],
+"PG":["个人护理用品","必需消费"],
+"PGR":["保险","金融"],
+"PH":["机械","工业"],
+"PHM":["家用耐用消费品","可选消费"],
+"PKG":["容器与包装","材料"],
+"PLD":["工业REITs","房地产"],
+"PLTR":["软件","信息技术"],
+"PM":["烟草","必需消费"],
+"PNC":["银行","金融"],
+"PNR":["机械","工业"],
+"PNW":["综合公用事业","公用事业"],
+"PODD":["医疗设备与用品","医疗保健"],
+"PPG":["化工","材料"],
+"PPL":["电力公用事业","公用事业"],
+"PRU":["保险","金融"],
+"PSA":["特种REITs","房地产"],
+"PSKY":["娱乐","通信服务"],
+"PSX":["石油天然气与消费燃料","能源"],
+"PTC":["软件","信息技术"],
+"PWR":["建筑与工程","工业"],
+"PYPL":["金融服务","金融"],
+"Q":["半导体及半导体设备","信息技术"],
+"QCOM":["半导体及半导体设备","信息技术"],
+"RCL":["酒店餐饮与休闲","可选消费"],
+"RDDT":["互动媒体与服务","通信服务"],
+"REG":["零售REITs","房地产"],
+"REGN":["生物科技","医疗保健"],
+"RF":["银行","金融"],
+"RJF":["资本市场","金融"],
+"RL":["纺织品服装与奢侈品","可选消费"],
+"RMD":["医疗设备与用品","医疗保健"],
+"ROK":["电气设备","工业"],
+"ROL":["商业服务与用品","工业"],
+"ROP":["电子设备仪器与元件","信息技术"],
+"ROST":["专业零售","可选消费"],
+"RSG":["商业服务与用品","工业"],
+"RTX":["航空航天与国防","工业"],
+"RVTY":["医疗设备与用品","医疗保健"],
+"SBAC":["特种REITs","房地产"],
+"SBUX":["酒店餐饮与休闲","可选消费"],
+"SCHW":["资本市场","金融"],
+"SHW":["化工","材料"],
+"SJM":["食品","必需消费"],
+"SLB":["能源设备与服务","能源"],
+"SMCI":["技术硬件存储与外围设备","信息技术"],
+"SNA":["机械","工业"],
+"SNDK":["技术硬件存储与外围设备","信息技术"],
+"SNPS":["软件","信息技术"],
+"SO":["电力公用事业","公用事业"],
+"SOLV":["医疗保健技术","医疗保健"],
+"SPG":["零售REITs","房地产"],
+"SPGI":["金融服务","金融"],
+"SRE":["综合公用事业","公用事业"],
+"STE":["医疗设备与用品","医疗保健"],
+"STLD":["金属与采矿","材料"],
+"STT":["资本市场","金融"],
+"STX":["技术硬件存储与外围设备","信息技术"],
+"STZ":["饮料","必需消费"],
+"SW":["容器与包装","材料"],
+"SWK":["机械","工业"],
+"SWKS":["半导体及半导体设备","信息技术"],
+"SYF":["消费金融","金融"],
+"SYK":["医疗设备与用品","医疗保健"],
+"SYY":["必需消费分销与零售","必需消费"],
+"T":["多元化电信服务","通信服务"],
+"TAP":["饮料","必需消费"],
+"TDG":["航空航天与国防","工业"],
+"TDY":["电子设备仪器与元件","信息技术"],
+"TECH":["生命科学工具与服务","医疗保健"],
+"TEL":["电子设备仪器与元件","信息技术"],
+"TER":["半导体及半导体设备","信息技术"],
+"TFC":["银行","金融"],
+"TGT":["必需消费分销与零售","必需消费"],
+"TJX":["专业零售","可选消费"],
+"TKO":["娱乐","通信服务"],
+"TMO":["生命科学工具与服务","医疗保健"],
+"TMUS":["无线电信服务","通信服务"],
+"TPL":["石油天然气与消费燃料","能源"],
+"TPR":["纺织品服装与奢侈品","可选消费"],
+"TRGP":["石油天然气与消费燃料","能源"],
+"TRMB":["软件","信息技术"],
+"TROW":["资本市场","金融"],
+"TRV":["保险","金融"],
+"TSCO":["专业零售","可选消费"],
+"TSLA":["汽车","可选消费"],
+"TSN":["食品","必需消费"],
+"TT":["建筑产品","工业"],
+"TTD":["媒体","通信服务"],
+"TTWO":["娱乐","通信服务"],
+"TXN":["半导体及半导体设备","信息技术"],
+"TXT":["航空航天与国防","工业"],
+"TYL":["软件","信息技术"],
+"UAL":["客运航空","工业"],
+"UBER":["陆运","工业"],
+"UDR":["住宅REITs","房地产"],
+"UHS":["医疗服务提供商","医疗保健"],
+"ULTA":["专业零售","可选消费"],
+"UNH":["医疗服务提供商","医疗保健"],
+"UNP":["陆运","工业"],
+"UPS":["航空货运与物流","工业"],
+"URI":["贸易公司与经销商","工业"],
+"USB":["银行","金融"],
+"V":["金融服务","金融"],
+"VEEV":["医疗保健技术","医疗保健"],
+"VICI":["酒店度假REITs","房地产"],
+"VLO":["石油天然气与消费燃料","能源"],
+"VLTO":["商业服务与用品","工业"],
+"VMC":["建筑材料","材料"],
+"VMRK":["住宅REITs","房地产"],
+"VRSK":["专业服务","工业"],
+"VRSN":["IT服务","信息技术"],
+"VRT":["电气设备","工业"],
+"VRTX":["生物科技","医疗保健"],
+"VST":["电力公用事业","公用事业"],
+"VTR":["医疗REITs","房地产"],
+"VTRS":["制药","医疗保健"],
+"VZ":["多元化电信服务","通信服务"],
+"WAB":["机械","工业"],
+"WAT":["生命科学工具与服务","医疗保健"],
+"WBD":["媒体","通信服务"],
+"WDAY":["软件","信息技术"],
+"WDC":["技术硬件存储与外围设备","信息技术"],
+"WEC":["电力公用事业","公用事业"],
+"WELL":["医疗REITs","房地产"],
+"WFC":["银行","金融"],
+"WM":["商业服务与用品","工业"],
+"WMB":["石油天然气与消费燃料","能源"],
+"WMT":["必需消费分销与零售","必需消费"],
+"WRB":["保险","金融"],
+"WSM":["专业零售","可选消费"],
+"WST":["医疗设备与用品","医疗保健"],
+"WTW":["保险","金融"],
+"WY":["特种REITs","房地产"],
+"WYNN":["酒店餐饮与休闲","可选消费"],
+"XEL":["综合公用事业","公用事业"],
+"XOM":["石油天然气与消费燃料","能源"],
+"XYL":["机械","工业"],
+"XYZ":["金融服务","金融"],
+"YUM":["酒店餐饮与休闲","可选消费"],
+"ZBH":["医疗设备与用品","医疗保健"],
+"ZBRA":["电子设备仪器与元件","信息技术"],
+"ZTS":["制药","医疗保健"]
+};
+const US_SEC_ORDER=["信息技术","工业","金融","医疗保健","可选消费","必需消费","通信服务","公用事业","房地产","能源","材料"];
+
+const US_QQ='https://qt.gtimg.cn/q=';
+const US_BATCH=50;
+const US_MIN_CONSTITUENTS=3;
+const US_CACHE_KEY='finbench_usind_v1';
+
+function applyUsInd(o){
+  if(!o||!o.industries||!Array.isArray(o.industries)||!o.industries.length)return false;
+  D.usIndustries={date:o.date||'', sectors:o.sectors||[], industries:o.industries, stats:o.stats||{}};
+  try{ localStorage.setItem(US_CACHE_KEY, JSON.stringify(D.usIndustries)); }catch(e){}
+  return true;
+}
+
+/* 美东常规交易时段（北京视图）：用 Intl 取 America/New_York 本地时间，自动处理夏令时；周一至周五 09:30–16:00 */
+function usMarketOpen(){
+  try{
+    const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'2-digit',minute:'2-digit',weekday:'short',hour12:false}).formatToParts(new Date());
+    const g=t=>{const p=parts.find(x=>x.type===t);return p?p.value:'';};
+    const wd=g('weekday'); if(wd==='Sat'||wd==='Sun')return false;
+    let h=parseInt(g('hour'),10); if(h===24)h=0;
+    const m=parseInt(g('minute'),10);
+    const mins=h*60+m;
+    return mins>=9*60+30 && mins<=16*60;
+  }catch(e){ return true; } // 时区 API 不可用时保守视为开盘（照常刷新）
+}
+
+/* 浏览器实时算：腾讯批量拉价 → 等权聚合到 GICS 行业 */
+async function computeUsIndustries(){
+  const codes=Object.keys(SP500_GICS);
+  const rows=[]; const dates={};
+  for(let i=0;i<codes.length;i+=US_BATCH){
+    const batch=codes.slice(i,i+US_BATCH);
+    try{
+      const txt=await tget(US_QQ+batch.map(c=>'us'+c).join(','), 12000);
+      txt.split(';').forEach(p=>{
+        const mm=p.match(/v_(\w+)="([^"]*)"/); if(!mm)return;
+        const f=mm[2].split('~');
+        const code=mm[1].replace(/^us/,'').toUpperCase();
+        const pct=parseFloat(f[32]);
+        if(!isNaN(pct)&&SP500_GICS[code]){
+          rows.push({code,pct});
+          const d=(f[30]||'').slice(0,10); if(d)dates[d]=(dates[d]||0)+1;
+        }
+      });
+    }catch(e){ /* 单批失败跳过，继续其他批 */ }
+    await new Promise(r=>setTimeout(r,120));
+  }
+  if(rows.length<300){ // 抓取异常（腾讯限流/网络），不覆盖已有缓存
+    if(typeof renderDash==='function')renderDash();
+    return;
+  }
+  let dataDate='';
+  const dk=Object.entries(dates).sort((a,b)=>b[1]-a[1])[0];
+  if(dk)dataDate=dk[0];
+  const grp={};
+  rows.forEach(r=>{ const mp=SP500_GICS[r.code]; const k=mp[1]+'|'+mp[0]; (grp[k]=grp[k]||{sec:mp[1],ind:mp[0],sum:0,n:0}).sum+=r.pct; grp[k].n++; });
+  const all=Object.values(grp).map(g=>({sec:g.sec,ind:g.ind,n:g.n,chg:+(g.sum/g.n).toFixed(2)}));
+  const thin=all.filter(x=>x.n<US_MIN_CONSTITUENTS);
+  const kept=all.filter(x=>x.n>=US_MIN_CONSTITUENTS).sort((a,b)=>US_SEC_ORDER.indexOf(a.sec)-US_SEC_ORDER.indexOf(b.sec)||b.chg-a.chg);
+  const secGrp={}; kept.forEach(x=>(secGrp[x.sec]=secGrp[x.sec]||[]).push(x.chg));
+  const sectors=Object.entries(secGrp).map(([sec,arr])=>({sec,n:arr.length,chg:+(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2)})).sort((a,b)=>US_SEC_ORDER.indexOf(a.sec)-US_SEC_ORDER.indexOf(b.sec));
+  applyUsInd({
+    date:dataDate,
+    updatedAt:new Date().toISOString(),
+    source:'S&P 500 (GICS) + 腾讯行情·前端实时',
+    method:'equal-weight',
+    universe:'S&P 500',
+    minConstituents:US_MIN_CONSTITUENTS,
+    stats:{stocks:rows.length, industries:kept.length, droppedThin:thin.length},
+    sectors, industries:kept
+  });
+  if(typeof renderDash==='function')renderDash();
+}
+
+/* 美股 GICS 刷新调度：加载即算（先显缓存）→ 交易时段每 6 小时刷新 */
+function scheduleUsIndustries(){
+  try{ const c=JSON.parse(localStorage.getItem(US_CACHE_KEY)||'null'); if(c&&c.industries&&c.industries.length){ D.usIndustries=c; } }catch(e){}
+  if(typeof renderDash==='function')renderDash();
+  computeUsIndustries();
+  setInterval(()=>{ if(usMarketOpen()) computeUsIndustries(); }, 6*3600*1000);
+}
+
 
 async function jget(url,timeout=9000){
   const ctl=new AbortController();
@@ -665,44 +1266,6 @@ async function fetchMainFlow(){
   }catch(e){return false;}
 }
 
-/* 美股隔夜板块行情：东财美股 ETF 用 107.{ticker} 前缀（已实测）
- * 原 11 板块 SPDR + 细分行业 ETF 共 34 只（SOXX/SMH/ICLN/IBB 东财无行情已剔除，已实测验证）
- * f3=当日涨跌幅%，隔夜=最近美股交易日收盘(美东16:00≈北京次日4:00) */
-const US_GRP={tech:'科技',comm:'通信',fin:'金融',energy:'能源',indu:'工业',mat:'材料',cons:'消费',util:'公用',health:'医疗',re:'地产'};
-const US_SEC=[
- {t:'XLK',n:'科技',g:'tech'},{t:'HACK',n:'网络安全',g:'tech'},{t:'IGV',n:'软件',g:'tech'},{t:'FDN',n:'互联网',g:'tech'},
- {t:'XLC',n:'通信',g:'comm'},{t:'JETS',n:'航空',g:'comm'},
- {t:'XLF',n:'金融',g:'fin'},{t:'KBE',n:'银行',g:'fin'},{t:'KRE',n:'地区银行',g:'fin'},{t:'KIE',n:'保险',g:'fin'},{t:'IAI',n:'券商',g:'fin'},
- {t:'XLE',n:'能源',g:'energy'},{t:'XOP',n:'油气开采',g:'energy'},{t:'OIH',n:'油服',g:'energy'},{t:'XES',n:'油气设备',g:'energy'},
- {t:'XLI',n:'工业',g:'indu'},{t:'ITA',n:'军工航天',g:'indu'},{t:'PAVE',n:'基建',g:'indu'},
- {t:'XLB',n:'材料',g:'mat'},{t:'XME',n:'金属采矿',g:'mat'},{t:'MOO',n:'农业',g:'mat'},
- {t:'XLP',n:'必需消费',g:'cons'},{t:'XLY',n:'可选消费',g:'cons'},{t:'XRT',n:'零售',g:'cons'},{t:'XHB',n:'住宅建筑',g:'cons'},{t:'PEJ',n:'休闲娱乐',g:'cons'},
- {t:'XLU',n:'公用事业',g:'util'},{t:'TAN',n:'太阳能',g:'util'},
- {t:'XLV',n:'医疗',g:'health'},{t:'XBI',n:'生物科技',g:'health'},{t:'IHI',n:'医疗器械',g:'health'},{t:'XHS',n:'医疗服务',g:'health'},
- {t:'XLRE',n:'房地产',g:'re'},{t:'IYR',n:'地产',g:'re'}
-];
-async function fetchUsSectors(){
-  try{
-    const half=Math.ceil(US_SEC.length/2);
-    const batches=[US_SEC.slice(0,half),US_SEC.slice(half)];
-    const js=await Promise.all(batches.map(b=>{
-      const sec=b.map(x=>'107.'+x.t).join(',');
-      return emget(`/api/qt/ulist.np/get?secids=${sec}&fields=f12,f14,f2,f3,f6&fltt=2&invt=2`);
-    }));
-    const rows=[];
-    js.forEach(j=>((j.data&&j.data.diff)||[]).forEach(x=>rows.push(x)));
-    if(!rows.length)return false;
-    const meta={}; US_SEC.forEach(s=>meta[s.t]={n:s.n,g:s.g});
-    const list=rows.map(x=>{const m=meta[x.f12]||{};
-      return {code:x.f12,name:m.n||x.f14,grp:m.g||'',
-        chg:typeof x.f3==='number'?+x.f3.toFixed(2):null,
-        px:typeof x.f2==='number'?+x.f2.toFixed(2):null,
-        amt:typeof x.f6==='number'?+(x.f6/1e8).toFixed(1):null};}).filter(x=>x.chg!==null);
-    if(!list.length)return false;
-    D.usSectors={list};
-    return true;
-  }catch(e){return false;}
-}
 
 /* 融资融券：东财 datacenter（单位：元 → 亿）
  * 该域名无 CORS 头，走 JSONP；JSONP 也失败再退回直连 fetch（本地/代理环境下可能可用）。 */
@@ -732,7 +1295,7 @@ async function fetchMargin(){
  *  - 日频源（两融、行业估值）：一天才变一次，6 小时内只拉一次，别跟着 60 秒反复打
  * 涨跌停池只在交易时段拉 —— 收盘后它恒为 0，没有意义。 */
 const DAILY_TTL=6*3600*1000;
-const DAILY_SRC={margin:fetchMargin, indVal:fetchIndVal, usSectors:fetchUsSectors};
+const DAILY_SRC={margin:fetchMargin, indVal:fetchIndVal};
 const REALTIME_SRC=[['indices',fetchIndices],['sectors',fetchSectors],['breadth',fetchBreadth],
                     ['futures',fetchFutures],['boards',fetchBoards]];
 /* 单源硬性超时兜底：即便某源的 fetch 在网络半开/反代环境下迟迟不 resolve、abort 也未触发，
@@ -801,7 +1364,7 @@ const REG=[
   {id:'indVal',cat:'breadth',name:'行业估值',desc:'东财细分行业 PE-TTM / PB-MRQ(日频)',on:true},
   {id:'sectors',cat:'sectors',name:'板块热度',desc:'申万一级行业当日涨跌·PE-TTM历史分位',on:true},
   {id:'boards',cat:'sectors',name:'细分板块涨幅榜',desc:'东财496板块涨幅TOP·换手率·领涨股',on:true},
-  {id:'us_sectors',cat:'global',name:'美股隔夜板块',desc:'美股34只细分行业ETF隔夜涨跌(科技/金融/能源/工业/材料/消费/公用/医疗/地产/通信)',on:true,layout:'wide'}
+  {id:'us_industries',cat:'global',name:'美股隔夜行业(GICS)',desc:'标普500成分股按 GICS 行业等权聚合的隔夜涨跌(半导体/银行/油气/制药等53个行业)',on:true,layout:'wide'}
 ];
 
 /* ---------- state ---------- */
@@ -922,20 +1485,44 @@ function rMainFlow(){
   </div>`;
 }
 
-function rUsSectors(){
-  const d=D.usSectors;
-  if(!d||!d.list||!d.list.length){
-    return `<div class="card">${cardHeader('美股隔夜板块','美股·美东收盘','')}<div class="note" style="text-align:center;padding:20px 0;color:var(--faint)">等待隔夜行情</div></div>`;
+function rUsIndustries(){
+  const d=D.usIndustries;
+  if(!d||!d.industries||!d.industries.length){
+    return `<div class="card">
+      ${cardHeader('美股隔夜行业','GICS','')}
+      <div class="note" style="text-align:center;padding:20px 0;color:var(--faint)">等待隔夜行情</div>
+    </div>`;
   }
-  const up=d.list.filter(x=>x.chg>0).length,down=d.list.length-up;
-  const sorted=d.list.slice().sort((a,b)=>b.chg-a.chg);
-  const rowHtml=x=>`<div class="row" style="justify-content:space-between"><span class="lbl" style="width:auto;flex:1">${x.name}${x.grp?`<i class="utag">${US_GRP[x.grp]||x.grp}</i>`:''}</span><span class="amt ${x.chg>=0?'up':'down'}">${x.chg>=0?'+':''}${x.chg.toFixed(2)}%</span></div>`;
-  const colA=[],colB=[]; sorted.forEach((x,i)=>(i%2?colB:colA).push(x));
-  const cols=[colA,colB].map(c=>`<div class="flow" style="gap:3px;margin-top:6px;flex:1;min-width:0">${c.map(rowHtml).join('')}</div>`).join('');
+  // GICS 行业名较长时压缩到 5 字以内（仅展示用，不改原始数据）
+  const US_IND_SHORT={
+    '半导体及半导体设备':'半导体','技术硬件存储与外围设备':'硬件存储','电子设备仪器与元件':'电子元件',
+    '航空航天与国防':'航空航天','商业服务与用品':'商业服务','航空货运与物流':'航空物流',
+    '纺织品服装与奢侈品':'服饰奢侈','家用耐用消费品':'耐用消费','酒店餐饮与休闲':'酒店休闲',
+    '必需消费分销与零售':'消费零售','个人护理用品':'个护用品','互动媒体与服务':'互动媒体',
+    '多元化电信服务':'电信服务','综合公用事业':'综合公用','电力公用事业':'电力公用',
+    '石油天然气与消费燃料':'油气燃料','特种REITs':'特种地产','医疗REITs':'医疗地产',
+    '零售REITs':'零售地产','住宅REITs':'住宅地产','医疗服务提供商':'医疗服务',
+    '生命科学工具与服务':'生命科学','医疗设备与用品':'医疗设备','能源设备与服务':'能源设备'
+  };
+  const short=x=>US_IND_SHORT[x]||x;
+  const ups=d.industries.filter(x=>x.chg>0).length, downs=d.industries.length-ups;
+  const bySec={}; d.industries.forEach(x=>(bySec[x.sec]=bySec[x.sec]||[]).push(x));
+  const cell=x=>{ const c=x.chg||0; return `<div class="cell" style="background:${heatColor(c)}">
+      <div class="n">${short(x.ind)}</div>
+      <div class="c ${upDown(c)}">${c>=0?'+':''}${c.toFixed(2)}%</div>
+    </div>`; };
+  const grp=(d.sectors||[]).map(s=>{
+    const arr=(bySec[s.sec]||[]).slice().sort((a,b)=>b.chg-a.chg);
+    if(!arr.length)return '';
+    return `<div style="margin-top:8px">
+      <div class="br-legend" style="margin-top:0"><span style="font-weight:700;color:var(--text)">${s.sec}</span><span>${s.n} 行业</span></div>
+      <div class="heat tight" style="grid-template-columns:repeat(5,1fr);margin-top:6px">${arr.map(cell).join('')}</div>
+    </div>`;
+  }).join('');
   return `<div class="card">
-    ${cardHeader('美股隔夜板块',`细分行业 ${d.list.length} · 涨${up}/跌${down}`,'')}
-    <div style="display:flex;gap:14px">${cols}</div>
-    <div class="fut-legend" style="margin-top:8px"><span>美股细分行业 ETF · 美东最新收盘(隔夜) · 东财行情</span></div>
+    ${cardHeader('美股隔夜行业','GICS',`涨${ups}/跌${downs}`)}
+    ${grp}
+    <div class="fut-legend" style="margin-top:10px"><span>标普500 ${d.stats.industries}行业 · ${d.date||''} · 等权聚合</span><span>剔除 &lt;3 只薄样本 · 前端实时·腾讯行情</span></div>
   </div>`;
 }
 
@@ -1101,7 +1688,7 @@ const RENDER={
   fg_composite:rFGComposite,
   jqk_comps:rJqkComps,
   indices:rIndices,mainflow:rMainFlow,margin:rMargin,futures:rFutures,breadth:rBreadth,valuation:rValuation,sectors:rSectors,
-  limitPool:rLimitPool,indVal:rIndVal,boards:rBoards,us_sectors:rUsSectors
+  limitPool:rLimitPool,indVal:rIndVal,boards:rBoards,us_industries:rUsIndustries
 };
 
 function renderDash(){
@@ -1173,6 +1760,7 @@ loadCache();
 renderDash();renderSettings();
 loadJqk();
 scheduleJqkDaily(); // 每天21:00浏览器侧定时刷新（纯前端，不依赖 WorkBuddy；未填远端地址则内部直接 return）
+scheduleUsIndustries(); // 美股 GICS 前端实时聚合（加载即算 + 交易时段每6h刷新）
 loadLive();
 
 /* 数据更新策略：按是否开盘分两档 ——
