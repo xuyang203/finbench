@@ -106,6 +106,13 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .br-stack .seg{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
 .br-legend{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--dim)}
 .br-legend b{font-weight:800}
+.lb-row{display:flex;gap:8px;align-items:flex-start;margin-top:6px}
+.lb-tag{flex:0 0 40px;font-size:11px;font-weight:700;color:var(--dim);padding-top:4px}
+.lb-list{flex:1;display:flex;flex-wrap:wrap;gap:4px}
+.lb-chip{display:inline-flex;align-items:baseline;gap:4px;padding:3px 7px;border-radius:6px;background:var(--surface-2);border:1px solid var(--border);font-size:11px}
+.lb-chip b{color:var(--text);font-weight:600}
+.lb-chip i{color:var(--faint);font-style:normal;font-size:10px}
+.lb-chip.more{color:var(--faint);background:transparent;border-style:dashed}
 
 /* valuation */
 .val-row{display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid var(--border)}
@@ -302,6 +309,7 @@ const D = {
   ],
   futuresQuote:null,        // 股指期货主力合约实时行情 → {list:[{code,name,contract,price,chg,vol}]}
   limitPool:{zt:null,dt:null,zb:null,date:null},  // 涨停/跌停/强势股 家数（盘中实时）
+  shortline:{date:null,zt:null,zb:null,dt:null,maxLbc:null,lbCount:null,zbr:null,temp:null,level:null,tiers:[]},  // 短线情绪温度 + 连板梯队（东财涨停池明细：lbc 连板数 / hybk 题材）
   turnover:null,            // 市场换手率 → {sh,sz,cyb}
   indVal:{date:null,list:[]}, // 东财细分行业当日估值 → {date,list:[{name,pe,pb,n}]}
   boards:{list:[],tag:null},  // 东财细分板块涨跌幅 TOP → {list:[{name,chg,turn,pe,lead,leadChg}]}
@@ -355,6 +363,7 @@ function saveCache(){
       sectors:D.sectors.map(s=>({code:s.code,chg:s.chg})),
       futuresQuote:D.futuresQuote,
       limitPool:D.limitPool,
+      shortline:D.shortline,
       turnover:D.turnover,
       indVal:D.indVal,
       boards:D.boards,
@@ -379,6 +388,7 @@ function loadCache(){
     }
     if(c.futuresQuote&&c.futuresQuote.list)D.futuresQuote=c.futuresQuote;
     if(c.limitPool&&c.limitPool.date)D.limitPool=c.limitPool;
+    if(c.shortline&&c.shortline.date)D.shortline=c.shortline;
     if(c.turnover)D.turnover=c.turnover;
     if(c.indVal&&c.indVal.date)D.indVal=c.indVal;
     if(c.boards&&c.boards.list&&c.boards.list.length)D.boards=c.boards;
@@ -1207,6 +1217,40 @@ async function fetchLimitPool(){
   return true;
 }
 
+/* 短线情绪 + 连板梯队：同为东财 push2ex 涨停池，但 pagesize=200 拿全量明细。
+ * 涨停池每项带 lbc(连板数) 与 hybk(所属题材) —— 据此按连板层级排梯队；
+ * 情绪温度 0-100 = 涨停家数(30%) + 最高连板(25%) + 连板家数(20%)
+ *                + 炸板率反向(15%) + 跌停家数反向(10%) 的加权和。 */
+async function fetchShortline(){
+  const d=ymd(new Date());
+  const [ztj,zb,dt]=await Promise.all([
+    jget('https://push2ex.eastmoney.com/getTopicZTPool?ut='+POOL_UT+'&dpt=wz.ztzt&Pageindex=0&pagesize=200&sort=fbt%3Aasc&date='+d+'&_='+Date.now()).catch(()=>null),
+    poolCount('zb').catch(()=>null),
+    poolCount('dt').catch(()=>null)
+  ]);
+  const ztRaw=(ztj&&ztj.data&&typeof ztj.data.tc==='number')?ztj.data.tc:null;
+  if(ztRaw===null&&zb===null&&dt===null)return false;
+  const pool=(ztj&&ztj.data&&ztj.data.pool)||[];
+  const zt=ztRaw!==null?ztRaw:pool.length, zbn=zb||0, dtn=dt||0;
+  const byLb={};
+  pool.forEach(x=>{
+    const lb=Number(x.lbc)||1;                       // lbc 缺失视为首板
+    (byLb[lb]=byLb[lb]||[]).push({n:x.n,hybk:x.hybk||''});
+  });
+  const tiers=Object.keys(byLb).map(Number).sort((a,b)=>b-a).map(lb=>({lb,list:byLb[lb]}));
+  const maxLbc=tiers.length?tiers[0].lb:0;
+  const lbCount=pool.filter(x=>(Number(x.lbc)||1)>=2).length;   // 2板及以上
+  const zbr=(zt+zbn)>0?(zbn/(zt+zbn)*100):0;                    // 炸板率
+  const cl=v=>Math.max(0,Math.min(100,v));
+  const temp=Math.round(
+    cl(zt/80*100)*0.30 + cl(maxLbc/6*100)*0.25 + cl(lbCount/25*100)*0.20
+    + cl(100-zbr*2)*0.15 + cl(100-dtn/20*100)*0.10
+  );
+  const level=temp<20?'冰点':temp<40?'低迷':temp<60?'回暖':temp<80?'活跃':'过热';
+  D.shortline={date:d,zt,zb:zbn,dt:dtn,maxLbc,lbCount,zbr,temp,level,tiers};
+  return true;
+}
+
 /* 东财细分行业当日估值（PE_TTM / PB_MRQ）：datacenter 无 CORS，走 JSONP。
  * 日频数据。按 TRADE_DATE 降序拉 300 条，服务端返回的最新日期那批即当天全部板块
  * （实测 9/1 有 127 个），一次请求拿全，不用分页。 */
@@ -1310,6 +1354,7 @@ async function loadLive(force){
   $('#refresh').classList.add('spin');
   const jobs=REALTIME_SRC.slice();
   if(force||inSession(new Date()))jobs.push(['limitPool',fetchLimitPool]);
+  if(force||tradingDay(new Date()))jobs.push(['shortline',fetchShortline]);
   if(force||tradingDay(new Date()))jobs.push(['mainflow',fetchMainFlow]);
   Object.keys(DAILY_SRC).forEach(k=>{
     if(force||!LIVE.ttl[k]||Date.now()-LIVE.ttl[k]>DAILY_TTL)jobs.push([k,DAILY_SRC[k]]);
@@ -1354,6 +1399,8 @@ const CATS=[
 const REG=[
   {id:'fg_composite',cat:'sentiment',name:'韭圈儿恐贪指数',desc:'韭圈儿官方大盘恐贪指数 0-100（替代原自算 A股情绪指数）',on:true,layout:'wide'},
   {id:'jqk_comps',cat:'sentiment',name:'韭圈儿成分指标',desc:'北上资金/股价强度/指数波动/升贴水率/避险天堂/杠杆水平',on:true,layout:'wide'},
+  {id:'short_temp',cat:'sentiment',name:'短线情绪',desc:'情绪温度 0-100（涨停家数/最高连板/连板家数/炸板率/跌停 加权）',on:true},
+  {id:'short_lb',cat:'sentiment',name:'连板梯队',desc:'涨停股按连板层级排列（几连板 + 所属题材）',on:true},
   {id:'indices',cat:'indices',name:'大盘指数',desc:'上证/深证/创业板/恒指/标普/纳指',on:true},
   {id:'mainflow',cat:'flow',name:'主力资金流',desc:'全市场主力净流入(近似万得全A)',on:true},
   {id:'margin',cat:'flow',name:'融资融券余额',desc:'两市融资余额与融券余额(亿元)',on:false},
@@ -1578,6 +1625,58 @@ function rLimitPool(){
   </div>`;
 }
 
+function rShortTemp(){
+  const d=D.shortline;
+  if(!d||d.temp===null){
+    return `<div class="card">
+      ${cardHeader('短线情绪','A股')}
+      <div class="note" style="text-align:center;padding:20px 0;color:var(--faint)">等待盘中数据</div>
+    </div>`;
+  }
+  const col=d.temp>=80?'var(--up)':d.temp>=60?'var(--gold)':d.temp>=40?'var(--warn)':'var(--down)';
+  const cell=(k,v,u,cls)=>`<div class="st3"><div class="k">${k}</div><div class="v ${cls||''}">${v===null?'—':v}</div><div class="u">${u}</div></div>`;
+  return `<div class="card">
+    ${cardHeader('短线情绪',d.date?`A股·${d.date}`:'A股',d.level)}
+    <div class="stat3">
+      <div class="st3"><div class="k">情绪温度</div><div class="v" style="color:${col}">${d.temp}</div><div class="u">${d.level}</div></div>
+      ${cell('涨停',d.zt,'家','up')}
+      ${cell('最高连板',d.maxLbc,'板','')}
+    </div>
+    <div class="stat3" style="margin-top:8px">
+      ${cell('连板(≥2板)',d.lbCount,'家','')}
+      ${cell('炸板率',d.zbr.toFixed(1),'%','')}
+      ${cell('跌停',d.dt,'家','down')}
+    </div>
+    <div class="fut-legend"><span>涨停/最高板/连板家数/炸板率/跌停 加权</span><span>盘中实时 · 收盘后为当日终值</span></div>
+  </div>`;
+}
+
+function rShortLb(){
+  const d=D.shortline;
+  if(!d||!d.tiers||!d.tiers.length){
+    return `<div class="card">
+      ${cardHeader('连板梯队','A股')}
+      <div class="note" style="text-align:center;padding:20px 0;color:var(--faint)">等待盘中数据</div>
+    </div>`;
+  }
+  const rows=d.tiers.map(t=>{
+    const cap=t.lb>=3?14:(t.lb===2?12:8);     // 首板数量最多，限制展示长度
+    const show=t.list.slice(0,cap), rest=t.list.length-show.length;
+    return `<div class="lb-row">
+      <div class="lb-tag">${t.lb===1?'首板':t.lb+'板'}</div>
+      <div class="lb-list">
+        ${show.map(x=>`<span class="lb-chip"><b>${x.n}</b>${x.hybk?`<i>${x.hybk}</i>`:''}</span>`).join('')}
+        ${rest>0?`<span class="lb-chip more">+${rest}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="card">
+    ${cardHeader('连板梯队',`最高 ${d.maxLbc} 板`,`连板 ${d.lbCount} 家`)}
+    ${rows}
+    <div class="fut-legend"><span>东财涨停池 · 按连板层级排列</span><span>题材取所属行业板块</span></div>
+  </div>`;
+}
+
 function rIndVal(){
   const v=D.indVal;
   if(!v.date||!v.list.length){
@@ -1688,7 +1787,7 @@ const RENDER={
   fg_composite:rFGComposite,
   jqk_comps:rJqkComps,
   indices:rIndices,mainflow:rMainFlow,margin:rMargin,futures:rFutures,breadth:rBreadth,valuation:rValuation,sectors:rSectors,
-  limitPool:rLimitPool,indVal:rIndVal,boards:rBoards,us_industries:rUsIndustries
+  limitPool:rLimitPool,indVal:rIndVal,boards:rBoards,us_industries:rUsIndustries,short_temp:rShortTemp,short_lb:rShortLb
 };
 
 function renderDash(){
