@@ -1,4 +1,4 @@
-const CACHE = 'finbench-v18';
+const CACHE = 'finbench-v19';
 const SHELL = ['./', './index.html', './manifest.json', './icon.svg'];
 self.addEventListener('install', e => {
   self.skipWaiting();
@@ -21,6 +21,17 @@ self.addEventListener('fetch', e => {
         caches.open(CACHE).then(c => c.put(e.request, cp)).catch(() => {});
         return res;
       }).catch(() => caches.match(e.request).then(r => r || caches.match('./index.html')))
+    );
+    return;
+  }
+  // JSON 数据（jqk.json 兜底等）：network-first，避免不同设备吃到不同版本的陈旧缓存
+  if (url.pathname.endsWith('.json')) {
+    e.respondWith(
+      fetch(e.request).then(res => {
+        const cp = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, cp)).catch(() => {});
+        return res;
+      }).catch(() => caches.match(e.request))
     );
     return;
   }

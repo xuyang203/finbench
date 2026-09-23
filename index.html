@@ -394,13 +394,13 @@ function loadCache(){
 }
 /* 韭圈儿恐贪指数 + 6 大成分指标 —— 数据来源链（三级兜底，逐级自动降级）：
  *   1) JQK_WORKER_URL —— Cloudflare Worker 实时拉取（服务端做 fadrefa 签名 + AES 解密，token 只留服务端）
- *   2) JQK_RAW_URL    —— GitHub 仓库里的 jqk.json，由 GitHub Actions 每天 21:00 更新；
- *                        raw.githubusercontent.com 带 ACAO:*，浏览器可直接跨域读取
+ *   2) JQK_RAW_URL    —— GitHub 仓库里的 jqk.json（GitHub Actions 每日更新），经 jsDelivr CDN 镜像读取；
+ *                        cdn.jsdelivr.net 在中国大陆可达且带 ACAO:*，浏览器可直接跨域读取（绕开 raw.githubusercontent 墙）
  *   3) 同目录 jqk.json —— 本地文件兜底（fetch_jqk_signed.js 手动跑写入）
  * 三者都不可用时，用户仍可手动点「韭圈儿恐贪指数」卡片填入主指数。
  * 浏览器侧调度：填了任一远端地址后，每天 21:00 自动拉一次（scheduleJqkDaily），页面长期开着也会跨日刷新。 */
 const JQK_WORKER_URL=''; // 例：'https://jqk.xxx.workers.dev/jqk'
-const JQK_RAW_URL='https://raw.githubusercontent.com/xuyang203/jqk-fear-greed/main/jqk.json';
+const JQK_RAW_URL='https://cdn.jsdelivr.net/gh/xuyang203/jqk-fear-greed@main/jqk.json';
 // ↑ 对应 GitHub 仓库 xuyang203/jqk-fear-greed；仓库名若改了这里要同步改
 const hasJqkRemote=()=>!!JQK_WORKER_URL||(!!JQK_RAW_URL&&JQK_RAW_URL.indexOf('YOUR_USERNAME')<0);
 function applyJqk(o){
@@ -1406,7 +1406,7 @@ function rFGComposite(){
     ${cardHeader('韭圈儿恐贪指数','官方·0-100')}
     <div class="fg"><div class="info" style="width:100%;text-align:center;padding:22px 0">
       <div class="lab" style="color:var(--dim)">韭圈儿官方值未载入</div>
-      <div class="prev">每日21:00自动拉取（GitHub）/ 本地 jqk.json / 点击手动填入</div>
+      <div class="prev">每日自动拉取（jsDelivr CDN）/ 本地 jqk.json 兜底</div>
       <div class="prev jqk" onclick="__editJqk()" title="手动填入韭圈儿今日恐贪指数（0-100）">点击填入恐贪指数</div>
     </div></div></div>`;
   const v=j.value;
